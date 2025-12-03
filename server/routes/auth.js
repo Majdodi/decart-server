@@ -14,44 +14,50 @@ const { sendPasswordResetEmail } = require("../utils/email");
 // =============================
 // ✅ Register
 // =============================
-// =============================
-// ✅ Register (FIXED VERSION)
-// =============================
 router.post("/register", async (req, res) => {
+  console.log("📩 REGISTER HIT");
+  console.log("📌 BODY:", req.body);
+
   const { name, email, password } = req.body;
 
   try {
-    if (await User.findOne({ email })) {
+    const exists = await User.findOne({ email });
+    console.log("🔍 Email exists?", exists ? "YES" : "NO");
+
+    if (exists) {
       return res.status(400).json({ success: false, error: "Email already registered" });
     }
 
     const user = new User({ name, email, password });
     await user.save();
 
-    // 🔐 أنشئ توكن مثل اللوجين
+    console.log("✅ USER SAVED:", user);
+
     const token = jwt.sign(
-      { id: user._id, role: user.role || "user" },
+      { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "2h" }
     );
 
-    // 🎯 رجّع user + token حتى الـ frontend يزبط
+    console.log("🎫 GENERATED TOKEN:", token);
+
     res.status(201).json({
       success: true,
       user: {
         _id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role || "user"
+        role: user.role,
       },
-      token
+      token,
     });
 
   } catch (err) {
-    console.error("❌ Register error:", err);
+    console.error("❌ REGISTER ERROR:", err);
     res.status(500).json({ success: false, error: "Registration failed" });
   }
 });
+
 
 
 

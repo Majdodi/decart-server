@@ -1,6 +1,9 @@
 node_modules/
+server/node_modules/
 dist/
-*.env
-server/.env*
-.env*
+.env
+.env.*
 uploads/
+server/uploads/
+.vscode/
+.DS_Store

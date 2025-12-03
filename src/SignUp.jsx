@@ -17,6 +17,9 @@ export default function SignUp() {
 const handleSubmit = async (e) => {
   e.preventDefault();
 
+  console.log("🚀 SUBMIT REGISTER");
+  console.log("📩 Sending:", { name, email, password });
+
   try {
     const res = await fetch("https://decart-server.onrender.com/api/auth/register", {
       method: "POST",
@@ -24,51 +27,45 @@ const handleSubmit = async (e) => {
       body: JSON.stringify({ name, email, password }),
     });
 
-    const data = await res.json();
-    console.log("🔍 REGISTER RESPONSE:", data);
+    console.log("📥 RAW RESPONSE OBJECT:", res);
 
-    // ================================
-    // 🚨 الحماية: تأكد token موجود
-    // ================================
+    const data = await res.json();
+
+    console.log("🔍 REGISTER RESPONSE JSON:", data);
+
+    // ===========================================================
+    //  🔥 Debug مهم جداً: هل التوكن فعلاً موجود؟
+    // ===========================================================
+    console.log("🧪 data.success =", data.success);
+    console.log("🧪 data.user =", data.user);
+    console.log("🧪 data.token =", data.token);
+
     if (!data.success) {
+      console.log("❌ SERVER REJECTED:", data.error);
       return alert(data.error || "Registration failed");
     }
 
-    if (!data.token || !data.user) {
-      console.error("❌ Missing token or user in response:", data);
-      return alert("Server error: invalid response");
+    if (!data.token) {
+      console.log("🔥 ERROR: Backend did NOT return token!");
+      return alert("Server error: Token missing");
     }
 
-    // ================================
-    // 🔥 تسجيل دخول صحيح
-    // ================================
+    // 🔐 حفظ التوكن
     localStorage.setItem("token", data.token);
+    console.log("📝 Token saved:", data.token);
 
+    // تسجيل الدخول
     login({
       _id: data.user._id,
       name: data.user.name,
       email: data.user.email,
       role: data.user.role,
-      token: data.token
+      token: data.token,
     });
 
     localStorage.setItem("userId", data.user._id);
-    setUserId(data.user._id);
 
-    // ================================
-    // 🛒 رفع السلة للسيرفر
-    // ================================
-    if (cartItems.length > 0) {
-      for (const item of cartItems) {
-        await axios.post("https://decart-server.onrender.com/api/cart/add", {
-          userId: data.user._id,
-          productId: item._id || item.id,
-          qty: item.qty,
-        });
-      }
-      localStorage.removeItem("cart");
-      setCartItems([]);
-    }
+    console.log("✅ LOGIN DONE");
 
     alert("Registered successfully");
     navigate("/");
@@ -78,6 +75,7 @@ const handleSubmit = async (e) => {
     alert("Server error");
   }
 };
+
 
 
 
