@@ -14,26 +14,46 @@ export default function SignUp() {
   const { login } = useAuth();
   const { cartItems, setCartItems, setUserId } = useCart();
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log("=====================================");
+    console.log("🚀 SIGNUP SUBMIT");
+    console.log("📤 Sending:", { name, email, password });
+    console.log("=====================================");
+
     try {
-      const { data } = await api.post("/auth/register", {
+      const res = await api.post("/auth/register", {
         name,
         email,
         password,
       });
 
+      console.log("📥 RAW REGISTER RESPONSE:", res);
+      const data = res.data;
+
+      console.log("🔍 PARSED RESPONSE:", data);
+      console.log("🧪 data.success =", data.success);
+      console.log("🧪 data.user =", data.user);
+      console.log("🧪 data.token =", data.token);
+
       if (!data.success) {
+        console.log("❌ ERROR from backend:", data.error);
         return alert(data.error || "Registration failed");
       }
 
-      // حفظ التوكن
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.user._id);
+      if (!data.token) {
+        console.log("❌ ERROR: token is MISSING from backend!");
+        return alert("Server error: token missing");
+      }
 
-      // تسجيل الدخول
+      console.log("💾 Saving token...");
+      localStorage.setItem("token", data.token);
+      console.log("📝 Token saved:", localStorage.getItem("token"));
+
+      console.log("🔐 Calling login() from AuthContext...");
+      console.log("👤 User passed to login():", data.user);
+
       login(
         {
           _id: data.user._id,
@@ -45,21 +65,30 @@ export default function SignUp() {
         true
       );
 
+      console.log("✅ login() CALLED SUCCESSFULLY");
+
+      localStorage.setItem("userId", data.user._id);
+      console.log("💾 userId saved:", data.user._id);
+
       alert("Registered successfully");
       navigate("/");
 
     } catch (err) {
-      console.error("❌ Register Error:", err);
+      console.log("🔥 ================================");
+      console.log("❌ CATCH ERROR IN REGISTER");
+      console.log("💥 err.response:", err.response);
+      console.log("💥 err.message:", err.message);
+      console.log("💥 FULL ERROR:", err);
+      console.log("🔥 ================================");
+
       alert(err?.response?.data?.error || "Server error");
     }
   };
 
-
-
   return (
-    <div className="min-h-screen bg-[] flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4">
       <div className="max-w-md w-full">
-        <h2 className="text-center text-2xl font-semibold mb-10 text-[]">
+        <h2 className="text-center text-2xl font-semibold mb-10">
           Create an Account
         </h2>
 
@@ -69,29 +98,28 @@ export default function SignUp() {
             placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-[] text-[] p-3 border border-[] rounded focus:outline-none"
+            className="w-full p-3 border rounded"
           />
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-[] text-[] p-3 border border-[] rounded focus:outline-none"
+            className="w-full p-3 border rounded"
           />
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full bg-[] text-[] p-3 border border-[] rounded focus:outline-none"
+            className="w-full p-3 border rounded"
           />
 
           <button type="submit" className="btn-brown-full">
-  Sign Up
-</button>
+            Sign Up
+          </button>
 
-
-          <div className="flex justify-between text-sm text-[] pt-2">
+          <div className="flex justify-between text-sm pt-2">
             <Link to="/login" className="hover:underline">
               Back
             </Link>
