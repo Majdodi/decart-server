@@ -25,55 +25,60 @@ const handleSubmit = async (e) => {
     });
 
     const data = await res.json();
-
     console.log("🔍 REGISTER RESPONSE:", data);
 
-    // ----------------------------
-    //  🔥 الشرط الصحيح
-    // ----------------------------
-    if (res.ok && data.success && data.user) {
-
-      // حفظ التوكن
-      localStorage.setItem("token", data.token);
-
-      // تسجيل الدخول في AuthContext
-      login({
-        _id: data.user._id,
-        name: data.user.name,
-        email: data.user.email,
-        role: data.user.role,
-        token: data.token
-      });
-
-      // حفظ userId لمنظومة السلة
-      localStorage.setItem("userId", data.user._id);
-      setUserId(data.user._id);
-
-      // لو في سلة محلية → نرفعها للسيرفر
-      if (cartItems.length > 0) {
-        for (const item of cartItems) {
-          await axios.post("https://decart-server.onrender.com/api/cart/add", {
-            userId: data.user._id,
-            productId: item._id || item.id,
-            qty: item.qty,
-          });
-        }
-
-        localStorage.removeItem("cart");
-        setCartItems([]);
-      }
-
-      alert("Registered successfully");
-      navigate("/");
-
-    } else {
-      alert(data.error || "Registration failed");
+    // ================================
+    // 🚨 الحماية: تأكد token موجود
+    // ================================
+    if (!data.success) {
+      return alert(data.error || "Registration failed");
     }
+
+    if (!data.token || !data.user) {
+      console.error("❌ Missing token or user in response:", data);
+      return alert("Server error: invalid response");
+    }
+
+    // ================================
+    // 🔥 تسجيل دخول صحيح
+    // ================================
+    localStorage.setItem("token", data.token);
+
+    login({
+      _id: data.user._id,
+      name: data.user.name,
+      email: data.user.email,
+      role: data.user.role,
+      token: data.token
+    });
+
+    localStorage.setItem("userId", data.user._id);
+    setUserId(data.user._id);
+
+    // ================================
+    // 🛒 رفع السلة للسيرفر
+    // ================================
+    if (cartItems.length > 0) {
+      for (const item of cartItems) {
+        await axios.post("https://decart-server.onrender.com/api/cart/add", {
+          userId: data.user._id,
+          productId: item._id || item.id,
+          qty: item.qty,
+        });
+      }
+      localStorage.removeItem("cart");
+      setCartItems([]);
+    }
+
+    alert("Registered successfully");
+    navigate("/");
+
   } catch (err) {
     console.error("❌ Register Error:", err);
     alert("Server error");
   }
 };
+
 
 
   return (
