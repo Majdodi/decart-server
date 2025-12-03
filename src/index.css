@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --siteBg: #F2E2CE;
+  --siteText: #594539;
+  --siteWhite: #FFFFFF;
+  --siteBorder: #D9C8B6;
+  --siteLight: #F7EFE6;
+  --siteDark: #3E2F26;
+}
+
+
+/* إخفاء شريط التمرير */
+@layer utilities {
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* ======================================
+   🎨 الثيم العام للموقع — Global Theme
+   ====================================== */
+
+/* الخلفية العامة + اللون العام للنصوص */
+body {
+  @apply bg-siteBg text-siteText;
+  font-family: 'Inter', sans-serif;
+}
+
+/* الروابط */
+a {
+  @apply text-siteText;
+}
+
+/* العناوين */
+h1, h2, h3, h4, h5, h6 {
+  @apply text-siteText font-semibold;
+}
+
+/* ======================================
+   🟫 تنسيق الحقول (Inputs, Select, Textarea)
+   مطابق للثيم الجديد
+   ====================================== */
+
+input,
+select,
+textarea {
+  @apply bg-siteLight text-siteText border border-siteText rounded-md p-3;
+  transition: all 0.2s ease-in-out;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  @apply border-siteDark;
+  box-shadow: 0 0 4px #3E2F26;
+}
+
+/* placeholder */
+input::placeholder,
+textarea::placeholder {
+  color: #7A6F67 !important;
+}
+
+/* ======================================
+   🟫 عناصر بيضاء جاهزة للاستخدام
+   ====================================== */
+
+.card {
+  @apply bg-siteWhite text-siteText rounded-xl shadow-md p-4;
+}
+
+/* زر بني */
+.btn-main {
+  @apply bg-siteText text-siteBg px-4 py-2 rounded transition duration-200;
+}
+
+.btn-main:hover {
+  opacity: 0.85;
+}
+
+/* زر أبيض */
+.btn-white {
+  @apply bg-siteWhite text-siteText border border-siteText px-4 py-2 rounded transition duration-200;
+}
+
+.btn-white:hover {
+  @apply bg-siteLight;
+}
+
+/* خلفية لوحة الأدمن */
+.admin-bg {
+  @apply bg-siteLight text-siteText;
+}
+
+/* خلفيات الصفحات العامة */
+.site-bg {
+  @apply bg-siteBg text-siteText;
+}
+/* زر بني بدون أي حجم، صفات فقط */
+.btn-brown {
+  background-color: var(--siteText);
+  color: var(--siteBg);
+  border-radius: 6px;
+  transition: 0.2s ease-in-out;
+}
+
+.btn-brown:hover {
+  opacity: 0.85;
+}
+
+/* لو في أزرار بدك تخليها كامل العرض */
+.btn-brown-full {
+  background-color: var(--siteText) !important; /* بني */
+  color: var(--siteBg) !important;              /* كتابة لون الخلفية */
+  border-radius: 6px;
+  width: 100%;
+  transition: 0.2s ease-in-out;
+  padding: 12px 0;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.btn-brown-full:hover {
+  opacity: 0.85;
+}
+
