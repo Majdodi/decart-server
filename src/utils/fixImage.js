@@ -6,68 +6,66 @@ export default function fixImage(img) {
     return "/images/fallback.png";
   }
 
-  // تحويل لـ string إذا مش string
   let fixed = String(img).trim();
 
   // ===========================================
-  // 🛠️ 1) إصلاح https:/  → https://
+  // 1) Fix https:/  → https://
   // ===========================================
   if (fixed.startsWith("https:/") && !fixed.startsWith("https://")) {
-    console.log("⚠️ FIXING BROKEN HTTPS URL:", fixed);
+    console.log("⚠️ FIXING BROKEN HTTPS:", fixed);
     fixed = fixed.replace("https:/", "https://");
   }
 
   if (fixed.startsWith("http:/") && !fixed.startsWith("http://")) {
-    console.log("⚠️ FIXING BROKEN HTTP URL:", fixed);
+    console.log("⚠️ FIXING BROKEN HTTP:", fixed);
     fixed = fixed.replace("http:/", "http://");
   }
 
   // ===========================================
-  // 🛠️ 2) إذا الرابط Supabase كامل
+  // ⭐ 2) REMOVE DUPLICATE /images/images/ FIRST!
+  // ===========================================
+  if (fixed.includes("/images/images/")) {
+    console.log("⚠️ REMOVING DUPLICATE /images/images/");
+    fixed = fixed.replace(/\/images\/images\//g, "/images/");
+  }
+
+  // ===========================================
+  // 3) Supabase full URL
   // ===========================================
   if (fixed.startsWith("http") && fixed.includes("supabase.co")) {
-    console.log("🟢 SUPABASE URL → OK:", fixed);
+    console.log("🟢 SUPABASE URL:", fixed);
     return fixed;
   }
 
   // ===========================================
-  // 🛠️ 3) إذا الرابط خارجي كامل
+  // 4) Full external URL
   // ===========================================
   if (fixed.startsWith("http://") || fixed.startsWith("https://")) {
-    console.log("🟢 FULL URL → OK:", fixed);
+    console.log("🟢 FULL URL:", fixed);
     return fixed;
   }
 
   // ===========================================
-  // 🛠️ 4) صور مرفوعة في السيرفر /uploads/
+  // 5) Uploads folder (/uploads/)
   // ===========================================
   if (fixed.startsWith("/uploads/")) {
     const final = "https://decart-server.onrender.com" + fixed;
-    console.log("🟢 UPLOAD → FINAL =", final);
+    console.log("🟢 UPLOAD →", final);
     return final;
   }
 
   // ===========================================
-  // 🛠️ 5) إزالة تكرار /images/images/ ⭐ هاي المهمة
-  // ===========================================
-  if (fixed.includes("/images/images/")) {
-    console.log("⚠️ REMOVING DUPLICATE /images/images/");
-    fixed = fixed.replace(/(\/images\/)+/g, "/images/");
-  }
-
-  // ===========================================
-  // 🛠️ 6) صور موجودة داخل /images/
+  // 6) Public images folder
   // ===========================================
   if (fixed.startsWith("/images/")) {
-    console.log("🟢 PUBLIC FOLDER =", fixed);
+    console.log("🟢 PUBLIC IMAGE =", fixed);
     return fixed;
   }
 
   // ===========================================
-  // 🛠️ 7) إذا فقط اسم ملف → ضيف /images/
+  // 7) Raw filename (b.jpg)
   // ===========================================
   const final = "/images/" + fixed.replace(/^\/+/, "");
-  console.log("🟢 RAW FILENAME → FIXED =", final);
-
+  console.log("🟢 RAW FILENAME →", final);
   return final;
 }
