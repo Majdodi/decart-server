@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { getProductImage } from "./utils/fixImage";
+import fixImage from "./utils/fixImage";
 import api from "./api";
 
 export default function Checkout() {

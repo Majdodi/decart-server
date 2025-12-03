@@ -91,6 +91,8 @@ function ProductCardSlider({ images = [], name, productId }) {
       >
         {safeImages.map((img, i) => {
           const finalImg = fixImage(img);
+          console.log("🔻 Slider image input:", img);
+  console.log("🔻 Slider final src:", finalImg);
           return (
             <img
               key={i}

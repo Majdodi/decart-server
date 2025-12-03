@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from './CartContext';
 import { FiTrash } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
-import { getProductImage } from "./utils/fixImage";
+import fixImage from "./utils/fixImage";
 
 export default function Cart() {
   const { t } = useTranslation();

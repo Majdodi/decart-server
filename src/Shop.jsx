@@ -107,6 +107,9 @@ export default function Shop() {
         onTouchEnd={touchEnd}
       >
         {products.map((product) => {
+          console.log("🟦 PRODUCT RAW DATA:", product);
+console.log("🟧 RAW IMAGES FIELD:", product.images);
+
           let images = [];
 
           if (Array.isArray(product.images) && product.images.length > 0) {
@@ -123,7 +126,9 @@ export default function Shop() {
               className="text-center transition-transform hover:-translate-y-2 duration-300"
             >
               <div className="mb-2 overflow-hidden rounded-2xl pointer-events-auto">
+                
                 <ProductCardSlider
+                
                   images={images}
                   name={product.name}
                   productId={product._id}

@@ -7,19 +7,17 @@ export default function ProductsPanel() {
   const [products, setProducts] = useState([]);
   const [editProduct, setEditProduct] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-const [editImageFile, setEditImageFile] = useState(null);
+  const [editImageFile, setEditImageFile] = useState(null);
 
-
-const [newProduct, setNewProduct] = useState({
-  name: "",
-  price: "",
-  description: "",
-  images: "",
-  topNote: "",
-  heartNote: "",
-  baseNote: "",
-});
-
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    price: "",
+    description: "",
+    images: "",
+    topNote: "",
+    heartNote: "",
+    baseNote: "",
+  });
 
   useEffect(() => {
     api
@@ -28,121 +26,111 @@ const [newProduct, setNewProduct] = useState({
       .catch((err) => console.error("❌ Error loading products:", err));
   }, []);
 
+  // ================================
+  // ⭐ رفع الصورة للسيرفر (Supabase)
+  // ================================
+  const uploadImage = async (file) => {
+    if (!file) return null;
 
-// ================================
-// ⭐ رفع الصورة للسيرفر (Multer)
-// ================================
-const uploadImage = async (file) => {
-  if (!file) return null;
+    const formData = new FormData();
+    formData.append("image", file);
 
-  const formData = new FormData();
-  formData.append("image", file);
+    try {
+      const res = await api.post("/products/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-  try {
-    const res = await api.post("/products/upload", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-
-    return res.data.url; 
-  } catch (err) {
-    console.error("❌ Image upload error:", err);
-    return null;
-  }
-  console.log("🟪 UPLOAD RESULT =", uploadedUrl);
-
-};
+      console.log("🟢 UPLOAD RESULT =", res.data.url);
+      return res.data.url; // Supabase URL
+    } catch (err) {
+      console.error("❌ Image upload error:", err);
+      return null;
+    }
+  };
 
   // ================================
-  // ⭐ إضافة منتج (يدعم صور متعددة)
+  // ⭐ إضافة منتج (صور تعمل 100%)
   // ================================
-const addProduct = async () => {
-  let imagesArray = [];
+  const addProduct = async () => {
+    let imagesArray = [];
 
-  // 1) صورة مرفوعة
-  if (imageFile) {
-    const uploadedUrl = await uploadImage(imageFile);
-    if (uploadedUrl) imagesArray.push(uploadedUrl); // Supabase URL
-  }
+    // 1) صورة مرفوعة
+    if (imageFile) {
+      const uploadedUrl = await uploadImage(imageFile);
+      if (uploadedUrl) imagesArray.push(uploadedUrl);
+    }
 
-  // 2) صور إضافية بالنص (إذا المستخدم أدخل روابط Supabase جاهزة فقط)
-  if (newProduct.images) {
-    const extra = newProduct.images
-      .split(",")
-      .map((img) => img.trim())
-      .filter(Boolean);
+    // 2) صور إضافية نصية (روابط جاهزة)
+    if (newProduct.images) {
+      const extra = newProduct.images
+        .split(",")
+        .map((img) => img.trim())
+        .filter(Boolean);
 
-    imagesArray.push(...extra);
-  }
+      imagesArray.push(...extra);
+    }
 
-  // إرسال الطلب
-  api.post("/products", {
-    ...newProduct,
-    images: imagesArray.join(","), 
-  })
-  .then(() => {
-setProducts((prev) => [...prev, res.data]);
-    setNewProduct({
-      name: "",
-      price: "",
-      description: "",
-      images: "",
-    });
-    setImageFile(null);
-  });
-};
+    console.log("🟦 FINAL IMAGES TO SAVE =", imagesArray);
 
-
-
+    api
+      .post("/products", {
+        ...newProduct,
+        images: imagesArray, // ⚠ مهم جداً Array وليس string
+      })
+      .then((res) => {
+        setProducts((prev) => [...prev, res.data]);
+        setNewProduct({
+          name: "",
+          price: "",
+          description: "",
+          images: "",
+          topNote: "",
+          heartNote: "",
+          baseNote: "",
+        });
+        setImageFile(null);
+      })
+      .catch((err) => console.error("❌ Error adding product:", err));
+  };
 
   // ================================
-  // ⭐ تعديل منتج (يدعم صور متعددة)
+  // ⭐ تعديل منتج (صور تعمل 100%)
   // ================================
-const updateProduct = async () => {
-  let imagesArray = [];
+  const updateProduct = async () => {
+    let imagesArray = [];
 
-  if (editImageFile) {
-    const uploadedUrl = await uploadImage(editImageFile);
-    if (uploadedUrl) imagesArray.push(uploadedUrl);
-  }
+    // صورة جديدة
+    if (editImageFile) {
+      const uploadedUrl = await uploadImage(editImageFile);
+      if (uploadedUrl) imagesArray.push(uploadedUrl);
+    }
 
-if (editProduct.images) {
-  const list = editProduct.images
-    .split(",")
-    .map((img) => img.trim())
-    .filter(Boolean); // لا تحول أي شيء
-  imagesArray.push(...list);
-}
+    // صور نصية
+    if (editProduct.images) {
+      const list = editProduct.images
+        .split(",")
+        .map((img) => img.trim())
+        .filter(Boolean);
 
+      imagesArray.push(...list);
+    }
 
+    console.log("🟪 UPDATE IMAGES =", imagesArray);
 
-
-
-  // ⭐ رجّع string
-  const imagesString = imagesArray.join(",");
-
-api.put(`/products/${editProduct._id}`, {
-    ...editProduct,
-    images: imagesArray.join(","),   // ← IMPORTANT
-})
-
-
-    .then((res) => {
-      setProducts((prev) =>
-        prev.map((p) => (p._id === editProduct._id ? res.data : p))
-      );
-      setEditProduct(null);
-      setEditImageFile(null);
-    })
-    .catch((err) => console.error("❌ Error updating product:", err));
-    console.log("🟪 UPDATE PAYLOAD =", {
-  ...editProduct,
-  images: imagesArray,
-});
-
-};
-
-
-
+    api
+      .put(`/products/${editProduct._id}`, {
+        ...editProduct,
+        images: imagesArray, // ⚠ مهم جداً Array وليس string
+      })
+      .then((res) => {
+        setProducts((prev) =>
+          prev.map((p) => (p._id === editProduct._id ? res.data : p))
+        );
+        setEditProduct(null);
+        setEditImageFile(null);
+      })
+      .catch((err) => console.error("❌ Error updating product:", err));
+  };
 
   // ================================
   // ⭐ حذف منتج
@@ -159,36 +147,40 @@ api.put(`/products/${editProduct._id}`, {
       .catch((err) => console.error("❌ Error deleting product:", err));
   };
 
+  // ================================
+  // ⭐ الواجهة
+  // ================================
   return (
     <div>
-      <h2 className="text-xl font-semibold text-[] mb-4">Products</h2>
-<input
-  placeholder="Top Note"
-  className="border p-2 w-full mb-2"
-  value={newProduct.topNote}
-  onChange={(e) =>
-    setNewProduct({ ...newProduct, topNote: e.target.value })
-  }
-/>
+      <h2 className="text-xl font-semibold mb-4">Products</h2>
 
-<input
-  placeholder="Heart Note"
-  className="border p-2 w-full mb-2"
-  value={newProduct.heartNote}
-  onChange={(e) =>
-    setNewProduct({ ...newProduct, heartNote: e.target.value })
-  }
-/>
+      {/* Top/Heart/Base Note */}
+      <input
+        placeholder="Top Note"
+        className="border p-2 w-full mb-2"
+        value={newProduct.topNote}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, topNote: e.target.value })
+        }
+      />
 
-<input
-  placeholder="Base Note"
-  className="border p-2 w-full mb-2"
-  value={newProduct.baseNote}
-  onChange={(e) =>
-    setNewProduct({ ...newProduct, baseNote: e.target.value })
-  }
-/>
+      <input
+        placeholder="Heart Note"
+        className="border p-2 w-full mb-2"
+        value={newProduct.heartNote}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, heartNote: e.target.value })
+        }
+      />
 
+      <input
+        placeholder="Base Note"
+        className="border p-2 w-full mb-2"
+        value={newProduct.baseNote}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, baseNote: e.target.value })
+        }
+      />
 
       {/* إضافة منتج */}
       <div className="bg-white rounded shadow p-4 mb-6">
@@ -213,22 +205,21 @@ api.put(`/products/${editProduct._id}`, {
           }
         />
 
-       <input
-  type="file"
-  accept="image/*"
-  className="border p-2 w-full mb-2"
-  onChange={(e) => setImageFile(e.target.files[0])}
-/>
+        <input
+          type="file"
+          accept="image/*"
+          className="border p-2 w-full mb-2"
+          onChange={(e) => setImageFile(e.target.files[0])}
+        />
 
-<input
-  placeholder="Extra Images (optional, comma separated)"
-  className="border p-2 mr-2 mb-2 w-full"
-  value={newProduct.images}
-  onChange={(e) =>
-    setNewProduct({ ...newProduct, images: e.target.value })
-  }
-/>
-
+        <input
+          placeholder="Extra Images (optional, comma separated)"
+          className="border p-2 mr-2 mb-2 w-full"
+          value={newProduct.images}
+          onChange={(e) =>
+            setNewProduct({ ...newProduct, images: e.target.value })
+          }
+        />
 
         <input
           placeholder="Description"
@@ -253,7 +244,7 @@ api.put(`/products/${editProduct._id}`, {
       {/* قائمة المنتجات */}
       <div className="bg-white rounded shadow overflow-auto">
         <table className="min-w-full">
-          <thead className="bg-[] text-white">
+          <thead>
             <tr>
               <th className="p-3">Image</th>
               <th className="p-3">Name</th>
@@ -267,13 +258,12 @@ api.put(`/products/${editProduct._id}`, {
             {products.map((p) => (
               <tr key={p._id} className="border-b">
                 <td className="p-3">
-                 <img
-  src={fixAdminImage(p.images?.[0])}
-  alt={p.name}
-  className="w-16 h-16 object-cover rounded"
-  onError={(e) => (e.target.src = "/images/fallback.png")}
-/>
-
+                  <img
+                    src={fixAdminImage(p.images?.[0])}
+                    alt={p.name}
+                    className="w-16 h-16 object-cover rounded"
+                    onError={(e) => (e.target.src = "/images/fallback.png")}
+                  />
                 </td>
 
                 <td className="p-3">{p.name}</td>
@@ -334,57 +324,51 @@ api.put(`/products/${editProduct._id}`, {
               placeholder="Images (comma separated)"
               value={editProduct.images}
               onChange={(e) =>
-                setEditProduct({
-                  ...editProduct,
-                  images: e.target.value,
-                })
+                setEditProduct({ ...editProduct, images: e.target.value })
               }
             />
-<input
-  type="file"
-  accept="image/*"
-  className="border p-2 w-full mb-2"
-  onChange={(e) => setEditImageFile(e.target.files[0])}
-/>
+
+            <input
+              type="file"
+              accept="image/*"
+              className="border p-2 w-full mb-2"
+              onChange={(e) => setEditImageFile(e.target.files[0])}
+            />
 
             <textarea
               className="border p-2 w-full mb-3"
               value={editProduct.description}
               onChange={(e) =>
-                setEditProduct({
-                  ...editProduct,
-                  description: e.target.value,
-                })
+                setEditProduct({ ...editProduct, description: e.target.value })
               }
             />
 
-<input
-  className="border p-2 w-full mb-2"
-  placeholder="Top Note"
-  value={editProduct.topNote}
-  onChange={(e) =>
-    setEditProduct({ ...editProduct, topNote: e.target.value })
-  }
-/>
+            <input
+              className="border p-2 w-full mb-2"
+              placeholder="Top Note"
+              value={editProduct.topNote}
+              onChange={(e) =>
+                setEditProduct({ ...editProduct, topNote: e.target.value })
+              }
+            />
 
-<input
-  className="border p-2 w-full mb-2"
-  placeholder="Heart Note"
-  value={editProduct.heartNote}
-  onChange={(e) =>
-    setEditProduct({ ...editProduct, heartNote: e.target.value })
-  }
-/>
+            <input
+              className="border p-2 w-full mb-2"
+              placeholder="Heart Note"
+              value={editProduct.heartNote}
+              onChange={(e) =>
+                setEditProduct({ ...editProduct, heartNote: e.target.value })
+              }
+            />
 
-<input
-  className="border p-2 w-full mb-2"
-  placeholder="Base Note"
-  value={editProduct.baseNote}
-  onChange={(e) =>
-    setEditProduct({ ...editProduct, baseNote: e.target.value })
-  }
-/>
-
+            <input
+              className="border p-2 w-full mb-2"
+              placeholder="Base Note"
+              value={editProduct.baseNote}
+              onChange={(e) =>
+                setEditProduct({ ...editProduct, baseNote: e.target.value })
+              }
+            />
 
             <div className="flex justify-end space-x-3">
               <button

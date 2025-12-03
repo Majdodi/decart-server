@@ -30,16 +30,37 @@ export default function ProductImageHover({ images = [], name }) {
     img = img.replace(/\\|"/g, "").trim();
 
     // if it's a full URL:
-    if (img.startsWith("http")) return img;
+    // Step 2: Clean paths and normalize URLs
+const finalImages = normalized.map((img) => {
+  if (!img) return "/images/fallback.png";
 
-    // if already correct
-    if (img.startsWith("/images/")) return img;
+  img = img.replace(/\\|"/g, "").trim();
 
-    // if begins with slash but missing folder
-    if (img.startsWith("/")) return "/images" + img;
+  // 1) Fix broken https:/ or http:/
+  if (img.startsWith("https:/") && !img.startsWith("https://")) {
+    img = img.replace("https:/", "https://");
+  }
+  if (img.startsWith("http:/") && !img.startsWith("http://")) {
+    img = img.replace("http:/", "http://");
+  }
 
-    // if plain file name
-    return "/images/" + img;
+  // 2) Full VALID URL → return as is
+  if (img.startsWith("http://") || img.startsWith("https://")) {
+    return img;
+  }
+
+  // 3) Public folder
+  if (img.startsWith("/images/")) return img;
+
+  // 4) /uploads/
+  if (img.startsWith("/uploads/")) {
+    return "https://decart-server.onrender.com" + img;
+  }
+
+  // 5) Raw filename
+  return "/images/" + img.replace(/^\/+/, "");
+});
+
   });
 
   // ⭐ Step 3: Hover Slider Logic

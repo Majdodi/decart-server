@@ -6,6 +6,7 @@ const cors = require("cors");
 const path = require("path");
 const multer = require("multer"); // ⭐ تمت إضافته هنا
 
+
 // =========================
 //    SUPABASE UPLOAD
 // =========================
@@ -80,6 +81,9 @@ const resetRoutes = require("./routes/auth.reset");
 
 app.use("/api/orders", orderRoutes);
 console.log("🟦 Loading PRODUCT routes from:", require.resolve("./routes/product"));
+
+app.use("/api", require("./routes/fixImages"));
+
 
 app.use("/api/products", productRoutes);
 app.use("/api/cart", require("./routes/cart"));

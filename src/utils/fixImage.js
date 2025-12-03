@@ -1,97 +1,62 @@
-// ==========================================================
-//  ✅ GLOBAL IMAGE FIXER – UNIVERSAL (LOCAL + CPANEL + SUPABASE)
-// ==========================================================
-import { API_BASE_URL } from "../api";
+export default function fixImage(img) {
+  console.log("🔵 fixImage INPUT =", img);
 
-const BACKEND_ORIGIN = API_BASE_URL.replace("/api", "");
-const IS_LOCAL = window.location.hostname === "localhost";
-
-/**
- * 🌍 دالة لمعالجة جميع أنواع الصور بشكل موحّد
- */
-export default function fixImage(imgData, index = 0) {
-  
-  // 1️⃣ Empty / invalid
-  if (!imgData) return "/images/fallback.png";
-
-  let img = "";
-
-  // 2️⃣ Array
-  if (Array.isArray(imgData)) {
-    img = imgData[index] || imgData[0] || "/images/fallback.png";
+  if (!img) {
+    console.log("❌ EMPTY IMAGE → fallback");
+    return "/images/fallback.png";
   }
 
-  // 3️⃣ Object (product)
-  else if (typeof imgData === "object") {
-    img = imgData.images || imgData.image || imgData.src || "";
-    if (Array.isArray(img)) img = img[index] || img[0] || "";
+  // ===========================================
+  // 🛠️ 1) إصلاح https:/  → https://
+  // ===========================================
+  if (img.startsWith("https:/") && !img.startsWith("https://")) {
+    console.log("⚠️ FIXING BROKEN HTTPS URL:", img);
+    img = img.replace("https:/", "https://");
   }
 
-  // 4️⃣ String
-  else if (typeof imgData === "string") {
-    img = imgData;
+  if (img.startsWith("http:/") && !img.startsWith("http://")) {
+    console.log("⚠️ FIXING BROKEN HTTP URL:", img);
+    img = img.replace("http:/", "http://");
   }
 
-  // STILL EMPTY?
-  if (!img) return "/images/fallback.png";
-
-  img = String(img).trim();
-
-  // =========================================
-  //      🔵 1) SUPABASE FULL URL
-  // =========================================
-  if (img.startsWith("https://") && img.includes("supabase.co")) {
+  // ===========================================
+  // 🛠️ 2) إذا الرابط Supabase كامل
+  // ===========================================
+  if (img.startsWith("http") && img.includes("supabase.co")) {
+    console.log("🟢 SUPABASE URL → OK:", img);
     return img;
   }
 
-  // =========================================
-  //      🔵 2) FULL HTTP URL
-  // =========================================
+  // ===========================================
+  // 🛠️ 3) إذا الرابط خارجي كامل
+  // ===========================================
   if (img.startsWith("http://") || img.startsWith("https://")) {
+    console.log("🟢 FULL URL → OK:", img);
     return img;
   }
 
-  // =========================================
-  //      🔵 3) LOCAL UPLOADS (LOCALHOST ONLY)
-  // =========================================
+  // ===========================================
+  // 🛠️ 4) صور مرفوعة في السيرفر /uploads/
+  // ===========================================
   if (img.startsWith("/uploads/")) {
-    return IS_LOCAL ? BACKEND_ORIGIN + img : "/images/fallback.png";
+    const final = "https://decart-server.onrender.com" + img;
+    console.log("🟢 UPLOAD → FINAL =", final);
+    return final;
   }
 
-  // =========================================
-  //      🔵 4) PUBLIC /images/ (CPANEL)
-  // =========================================
+  // ===========================================
+  // 🛠️ 5) صور موجودة داخل /images/
+  // ===========================================
   if (img.startsWith("/images/")) {
+    console.log("🟢 PUBLIC FOLDER =", img);
     return img;
   }
 
-  // =========================================
-  //      🔵 5) RAW FILENAMES
-  // =========================================
-  return "/images/" + img.replace(/^\/+/, "");
-}
+  // ===========================================
+  // 🛠️ 6) إذا فقط اسم ملف → ضيف /images/
+  // ===========================================
+  const final = "/images/" + img.replace(/^\/+/, "");
+  console.log("🟢 RAW FILENAME → FIXED =", final);
 
-
-// ==========================================================
-//  🔧 getProductImage – USED IN CART, CHECKOUT, PRODUCT LIST
-// ==========================================================
-export function getProductImage(product) {
-  if (!product) return "/images/fallback.png";
-
-  const img = product.images || product.image || "/images/fallback.png";
-
-  return fixImage(img, 0);
-}
-
-
-// ==========================================================
-//  🎯 IMAGE VALIDATOR
-// ==========================================================
-export async function isValidImage(imgUrl) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(true);
-    img.onerror = () => resolve(false);
-    img.src = imgUrl;
-  });
+  return final;
 }
