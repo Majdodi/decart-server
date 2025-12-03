@@ -41,7 +41,7 @@ useEffect(() => {
       <div
         className="relative h-[130vh] flex items-end justify-center text-center bg-cover bg-center bg-no-repeat"
         style={{
-backgroundImage: `url(${hero || "/images/perfume.jpg"})`,
+backgroundImage: `url(${hero})`,
 
           imageRendering: "auto",
         }}
