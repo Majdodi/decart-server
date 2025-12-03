@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import { useCart } from "./CartContext";
-import axios from "axios";
+import api from "./api";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -14,72 +14,45 @@ export default function SignUp() {
   const { login } = useAuth();
   const { cartItems, setCartItems, setUserId } = useCart();
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
 
-  console.log("🚀 SUBMIT REGISTER");
-  console.log("📩 Sending:", { name, email, password });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const res = await fetch("https://decart-server.onrender.com/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
+    try {
+      const { data } = await api.post("/auth/register", {
+        name,
+        email,
+        password,
+      });
 
-    console.log("📥 RAW RESPONSE OBJECT:", res);
+      if (!data.success) {
+        return alert(data.error || "Registration failed");
+      }
 
-    const data = await res.json();
+      // حفظ التوكن
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.user._id);
 
-    console.log("🔍 REGISTER RESPONSE JSON:", data);
+      // تسجيل الدخول
+      login(
+        {
+          _id: data.user._id,
+          name: data.user.name,
+          email: data.user.email,
+          role: data.user.role,
+        },
+        data.token,
+        true
+      );
 
-    // ===========================================================
-    //  🔥 Debug مهم جداً: هل التوكن فعلاً موجود؟
-    // ===========================================================
-    console.log("🧪 data.success =", data.success);
-    console.log("🧪 data.user =", data.user);
-    console.log("🧪 data.token =", data.token);
+      alert("Registered successfully");
+      navigate("/");
 
-    if (!data.success) {
-      console.log("❌ SERVER REJECTED:", data.error);
-      return alert(data.error || "Registration failed");
+    } catch (err) {
+      console.error("❌ Register Error:", err);
+      alert(err?.response?.data?.error || "Server error");
     }
-
-    if (!data.token) {
-      console.log("🔥 ERROR: Backend did NOT return token!");
-      return alert("Server error: Token missing");
-    }
-
-    // 🔐 حفظ التوكن
-    localStorage.setItem("token", data.token);
-    console.log("📝 Token saved:", data.token);
-
-    // تسجيل الدخول
-   login(
-  {
-    _id: data.user._id,
-    name: data.user.name,
-    email: data.user.email,
-    role: data.user.role
-  },
-  data.token,
-  true // remember user
-);
-
-
-    localStorage.setItem("userId", data.user._id);
-
-    console.log("✅ LOGIN DONE");
-
-    alert("Registered successfully");
-    navigate("/");
-
-  } catch (err) {
-    console.error("❌ Register Error:", err);
-    alert("Server error");
-  }
-};
-
+  };
 
 
 
