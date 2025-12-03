@@ -55,13 +55,17 @@ const handleSubmit = async (e) => {
     console.log("📝 Token saved:", data.token);
 
     // تسجيل الدخول
-    login({
-      _id: data.user._id,
-      name: data.user.name,
-      email: data.user.email,
-      role: data.user.role,
-      token: data.token,
-    });
+   login(
+  {
+    _id: data.user._id,
+    name: data.user.name,
+    email: data.user.email,
+    role: data.user.role
+  },
+  data.token,
+  true // remember user
+);
+
 
     localStorage.setItem("userId", data.user._id);
 
