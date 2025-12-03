@@ -67,5 +67,26 @@ export default function fixImage(img) {
   // ===========================================
   const final = "/images/" + fixed.replace(/^\/+/, "");
   console.log("🟢 RAW FILENAME →", final);
+  
   return final;
+}
+export function getProductImage(product) {
+  if (!product) return "/images/fallback.png";
+
+  let img = null;
+
+  // Array of images
+  if (Array.isArray(product.images) && product.images.length > 0) {
+    img = product.images[0];
+  }
+  // Single image
+  else if (product.image) {
+    img = product.image;
+  }
+  // No image
+  else {
+    return "/images/fallback.png";
+  }
+
+  return fixImage(img);
 }

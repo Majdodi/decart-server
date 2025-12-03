@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import fixImage from "./utils/fixImage";
+import fixImage, { getProductImage } from "./utils/fixImage";
 import api from "./api";
 
 export default function Checkout() {
@@ -418,7 +418,7 @@ const handleApplyDiscount = async () => {
 <div key={item._id} className="flex items-center justify-between py-4 border-b border-[#594539]">
               {/* 🌍 استخدام getProductImage بدلاً من fixImage مباشرة */}
               <img
-                src={getProductImage(item)}
+src={fixImage(item.images?.[0])}
                 alt={item.name}
                 onError={(e) => {
                   e.target.src = "/images/fallback.png";

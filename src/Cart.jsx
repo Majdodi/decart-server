@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from './CartContext';
 import { FiTrash } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
-import fixImage from "./utils/fixImage";
+import fixImage, { getProductImage } from "./utils/fixImage";
 
 export default function Cart() {
   const { t } = useTranslation();
@@ -140,7 +140,7 @@ cartItems.forEach(item => {
   
 
      <img
-  src={getProductImage(item)}
+src={fixImage(item.images?.[0])}
   alt={item.name}
   onError={(e) => {
     e.target.src = "/images/fallback.png";
