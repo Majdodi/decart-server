@@ -47,7 +47,7 @@ export default function Footer() {
           <FaInstagram className="text-xl hover:opacity-70 transition" />
         </a>
         <a
-          href="wa.me/972566741272"
+          href="https://wa.me/972566741272"
           target="_blank"
           rel="noopener noreferrer"
         >
