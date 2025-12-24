@@ -36,6 +36,8 @@ const items = cartItems.map((item) => ({
     // حساب الإجمالي
     let subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     let totalAmount = subtotal + (shippingFee || 0);
+let discountData = null;
+let discountAmount = 0;
 
     // تطبيق كود الخصم
 if (discountCode) {
@@ -56,11 +58,20 @@ if (discountCode) {
       });
     }
 
-    if (discount.type === "percentage") {
-      totalAmount = totalAmount * (1 - discount.value / 100);
-    } else {
-      totalAmount = totalAmount - discount.value;
-    }
+   if (discount.type === "percentage") {
+  discountAmount = (subtotal * discount.value) / 100;
+} else {
+  discountAmount = discount.value;
+}
+
+discountData = {
+  code: discount.code,
+  type: discount.type,
+  value: discount.value,
+  amount: discountAmount,
+};
+
+totalAmount = subtotal - discountAmount + (shippingFee || 0);
 
     discount.usedCount += 1;
     await discount.save();
@@ -89,23 +100,40 @@ if (discountCode) {
     }
 
     // إنشاء الطلب
-    const newOrder = new Order({
-      orderNumber: `ORD-${Date.now()}`,
-      customerInfo: {
-        name: `${form.firstName} ${form.lastName}`,
-        email: form.email,
-        phone: form.phone,
-        address: form.address,
-        city: form.city,
-        country: form.country,
-        postalCode: form.postcode || "",
-      },
-      items,
-      totalAmount,
-      shippingFee: shippingFee || 0,
-      paymentMethod: form.paymentMethod === "cod" ? "cash_on_delivery" : form.paymentMethod,
-      user: userId || null,
-    });
+const newOrder = new Order({
+  orderNumber: `ORD-${Date.now()}`,
+  customerInfo: {
+    name: `${form.firstName} ${form.lastName}`,
+    email: form.email,
+    phone: form.phone,
+    address: form.address,
+    detailedAddress: form.detailedAddress || "",
+    city: form.city,
+    country: form.country,
+  },
+  items,
+
+  subtotal: subtotal,
+
+  discount: {
+    code: discountData?.code || null,
+    type: discountData?.type || null,
+    value: discountData?.value || 0,
+    amount: discountAmount || 0,
+  },
+
+  shippingFee: shippingFee || 0,
+  totalAmount,
+
+  paymentMethod:
+    form.paymentMethod === "cod"
+      ? "cash_on_delivery"
+      : form.paymentMethod,
+
+  user: userId || null,
+});
+
+
 
     await newOrder.save();
 

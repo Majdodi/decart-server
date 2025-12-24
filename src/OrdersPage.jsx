@@ -69,17 +69,12 @@ export default function OrdersPage() {
 
             const items = order.items || order.cartItems || [];
 
-          // 🟤 Subtotal (سعر المنتجات فقط)
-const subtotal = items.reduce(
-  (s, it) => s + (Number(it.price) || 0) * (it.qty || 1),
-  0
-);
-
-// 🟤 Shipping – من الطلب نفسه
+// ✅ القيم الصحيحة من السيرفر
+const subtotal = order.subtotal || 0;
 const shipping = order.shippingFee || 0;
+const discount = order.discount;
+const total = order.totalAmount || 0;
 
-// 🟤 Final total
-const finalTotal = subtotal + shipping;
 
 
             return (
@@ -97,14 +92,36 @@ const finalTotal = subtotal + shipping;
       key={i}
       className="flex justify-between py-1 border-b text-[#594539]"
     >
-      <span>{it.name} × {it.qty || 1}</span>
-      <span>{fmt((Number(it.price) || 0) * (it.qty || 1))}</span>
+      <span>{it.name} × {it.quantity}</span>
+<span>{fmt(it.price * it.quantity)}</span>
+
     </div>
   ))}
 
-  <p className="mt-3 text-right text-lg font-bold text-[#594539]">
-    Total: {fmt(finalTotal)}
+<div className="mt-4 text-right text-sm space-y-1">
+  <p>
+    Subtotal: <span className="font-medium">{fmt(subtotal)}</span>
   </p>
+
+{discount?.amount > 0 && (
+  <p className="text-red-600">
+    Discount ({discount.code}
+    {discount.type === "percentage" && ` - ${discount.value}%`}
+    ): -{fmt(discount.amount)}
+  </p>
+)}
+
+
+
+  <p>
+    Shipping: <span className="font-medium">{fmt(shipping)}</span>
+  </p>
+
+  <p className="text-lg font-bold border-t pt-2">
+    Total: {fmt(total)}
+  </p>
+</div>
+
 
   <div className="text-right font-semibold text-[#594539]">
     {order.status || "Delivered Successfully"}

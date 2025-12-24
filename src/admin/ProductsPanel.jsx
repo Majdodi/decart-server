@@ -10,14 +10,22 @@ export default function ProductsPanel() {
   const [editImageFile, setEditImageFile] = useState(null);
 
   const [newProduct, setNewProduct] = useState({
-    name: "",
-    price: "",
-    description: "",
-    images: "",
-    topNote: "",
-    heartNote: "",
-    baseNote: "",
-  });
+  name_en: "",
+  name_ar: "",
+  description_en: "",
+  description_ar: "",
+  topNote_en: "",
+  topNote_ar: "",
+  heartNote_en: "",
+  heartNote_ar: "",
+  baseNote_en: "",
+  baseNote_ar: "",
+  price: "",
+  images: "",
+gender: [],
+});
+
+
 
   useEffect(() => {
     api
@@ -72,22 +80,40 @@ export default function ProductsPanel() {
 
     console.log("🟦 FINAL IMAGES TO SAVE =", imagesArray);
 
-    api
-      .post("/products", {
-        ...newProduct,
-        images: imagesArray, // ⚠ مهم جداً Array وليس string
-      })
+    api.post("/products", {
+  name_en: newProduct.name_en,
+  name_ar: newProduct.name_ar,
+  description_en: newProduct.description_en,
+  description_ar: newProduct.description_ar,
+  topNote_en: newProduct.topNote_en,
+  topNote_ar: newProduct.topNote_ar,
+  heartNote_en: newProduct.heartNote_en,
+  heartNote_ar: newProduct.heartNote_ar,
+  baseNote_en: newProduct.baseNote_en,
+  baseNote_ar: newProduct.baseNote_ar,
+  price: newProduct.price,
+  images: imagesArray,
+  gender: newProduct.gender, // ✅
+})
+
+
       .then((res) => {
         setProducts((prev) => [...prev, res.data]);
-        setNewProduct({
-          name: "",
-          price: "",
-          description: "",
-          images: "",
-          topNote: "",
-          heartNote: "",
-          baseNote: "",
-        });
+      setNewProduct({
+  name_en: "",
+  name_ar: "",
+  description_en: "",
+  description_ar: "",
+  topNote_en: "",
+  topNote_ar: "",
+  heartNote_en: "",
+  heartNote_ar: "",
+  baseNote_en: "",
+  baseNote_ar: "",
+  price: "",
+  images: "",
+});
+
         setImageFile(null);
       })
       .catch((err) => console.error("❌ Error adding product:", err));
@@ -115,13 +141,25 @@ export default function ProductsPanel() {
       imagesArray.push(...list);
     }
 
-    console.log("🟪 UPDATE IMAGES =", imagesArray);
+console.log("🟡 FRONTEND → editProduct BEFORE SEND:", editProduct);
 
-    api
-      .put(`/products/${editProduct._id}`, {
-        ...editProduct,
-        images: imagesArray, // ⚠ مهم جداً Array وليس string
-      })
+api.put(`/products/${editProduct._id}`, {
+  name_en: editProduct.name_en,
+  name_ar: editProduct.name_ar,
+  description_en: editProduct.description_en,
+  description_ar: editProduct.description_ar,
+  topNote_en: editProduct.topNote_en,
+  topNote_ar: editProduct.topNote_ar,
+  heartNote_en: editProduct.heartNote_en,
+  heartNote_ar: editProduct.heartNote_ar,
+  baseNote_en: editProduct.baseNote_en,
+  baseNote_ar: editProduct.baseNote_ar,
+  price: editProduct.price,
+  images: imagesArray,
+  gender: editProduct.gender, // ✅
+})
+
+
       .then((res) => {
         setProducts((prev) =>
           prev.map((p) => (p._id === editProduct._id ? res.data : p))
@@ -130,6 +168,10 @@ export default function ProductsPanel() {
         setEditImageFile(null);
       })
       .catch((err) => console.error("❌ Error updating product:", err));
+
+
+  
+
   };
 
   // ================================
@@ -150,92 +192,149 @@ export default function ProductsPanel() {
   // ================================
   // ⭐ الواجهة
   // ================================
+
+      useEffect(() => {
+  if (editProduct) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "auto";
+  }
+
+  return () => {
+    document.body.style.overflow = "auto";
+  };
+}, [editProduct]);
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Products</h2>
-
-      {/* Top/Heart/Base Note */}
-      <input
-        placeholder="Top Note"
-        className="border p-2 w-full mb-2"
-        value={newProduct.topNote}
-        onChange={(e) =>
-          setNewProduct({ ...newProduct, topNote: e.target.value })
-        }
-      />
-
-      <input
-        placeholder="Heart Note"
-        className="border p-2 w-full mb-2"
-        value={newProduct.heartNote}
-        onChange={(e) =>
-          setNewProduct({ ...newProduct, heartNote: e.target.value })
-        }
-      />
-
-      <input
-        placeholder="Base Note"
-        className="border p-2 w-full mb-2"
-        value={newProduct.baseNote}
-        onChange={(e) =>
-          setNewProduct({ ...newProduct, baseNote: e.target.value })
-        }
-      />
 
       {/* إضافة منتج */}
       <div className="bg-white rounded shadow p-4 mb-6">
         <h3 className="font-semibold mb-3">Add New Product</h3>
 
-        <input
-          placeholder="Name"
-          className="border p-2 mr-2 mb-2"
-          value={newProduct.name}
-          onChange={(e) =>
-            setNewProduct({ ...newProduct, name: e.target.value })
-          }
-        />
+        
+<input
+  placeholder="Name (English)"
+  className="border p-2 w-full mb-2"
+  value={newProduct.name_en}
+  onChange={(e) => setNewProduct({ ...newProduct, name_en: e.target.value })}
+/>
 
-        <input
-          placeholder="Price"
-          type="number"
-          className="border p-2 mr-2 mb-2"
-          value={newProduct.price}
-          onChange={(e) =>
-            setNewProduct({ ...newProduct, price: e.target.value })
-          }
-        />
+<input
+  placeholder="Name (Arabic)"
+  className="border p-2 w-full mb-2"
+  value={newProduct.name_ar}
+  onChange={(e) => setNewProduct({ ...newProduct, name_ar: e.target.value })}
+/>
 
-        <input
-          type="file"
-          accept="image/*"
-          className="border p-2 w-full mb-2"
-          onChange={(e) => setImageFile(e.target.files[0])}
-        />
+<textarea
+  placeholder="Description (English)"
+  className="border p-2 w-full mb-2"
+  value={newProduct.description_en}
+  onChange={(e) =>
+    setNewProduct({ ...newProduct, description_en: e.target.value })
+  }
+/>
 
-        <input
-          placeholder="Extra Images (optional, comma separated)"
-          className="border p-2 mr-2 mb-2 w-full"
-          value={newProduct.images}
-          onChange={(e) =>
-            setNewProduct({ ...newProduct, images: e.target.value })
-          }
-        />
+<textarea
+  placeholder="Description (Arabic)"
+  className="border p-2 w-full mb-2"
+  value={newProduct.description_ar}
+  onChange={(e) =>
+    setNewProduct({ ...newProduct, description_ar: e.target.value })
+  }
+/>
 
-        <input
-          placeholder="Description"
-          className="border p-2 w-full mb-2"
-          value={newProduct.description}
-          onChange={(e) =>
+<input
+  placeholder="Top Note (EN)"
+  className="border p-2 w-full mb-2"
+  value={newProduct.topNote_en}
+  onChange={(e) =>
+    setNewProduct({ ...newProduct, topNote_en: e.target.value })
+  }
+/>
+
+<input
+  placeholder="Top Note (AR)"
+  className="border p-2 w-full mb-2"
+  value={newProduct.topNote_ar}
+  onChange={(e) =>
+    setNewProduct({ ...newProduct, topNote_ar: e.target.value })
+  }
+/>
+
+<input
+  placeholder="Heart Note (EN)"
+  className="border p-2 w-full mb-2"
+  value={newProduct.heartNote_en}
+  onChange={(e) =>
+    setNewProduct({ ...newProduct, heartNote_en: e.target.value })
+  }
+/>
+
+<input
+  placeholder="Heart Note (AR)"
+  className="border p-2 w-full mb-2"
+  value={newProduct.heartNote_ar}
+  onChange={(e) =>
+    setNewProduct({ ...newProduct, heartNote_ar: e.target.value })
+  }
+/>
+
+<input
+  placeholder="Base Note (EN)"
+  className="border p-2 w-full mb-2"
+  value={newProduct.baseNote_en}
+  onChange={(e) =>
+    setNewProduct({ ...newProduct, baseNote_en: e.target.value })
+  }
+/>
+
+<input
+  placeholder="Base Note (AR)"
+  className="border p-2 w-full mb-2"
+  value={newProduct.baseNote_ar}
+  onChange={(e) =>
+    setNewProduct({ ...newProduct, baseNote_ar: e.target.value })
+  }
+/>
+
+<div className="mb-2">
+  <p className="mb-1 font-medium">Gender</p>
+
+  {[
+    { k: "men", l: "Men" },
+    { k: "women", l: "Women" },
+    { k: "unisex", l: "Unisex" },
+  ].map(g => (
+    <label key={g.k} className="flex items-center gap-2 mb-1">
+      <input
+        type="checkbox"
+        checked={newProduct.gender.includes(g.k)}
+        onChange={(e) => {
+          if (e.target.checked) {
             setNewProduct({
               ...newProduct,
-              description: e.target.value,
-            })
+              gender: [...newProduct.gender, g.k],
+            });
+          } else {
+            setNewProduct({
+              ...newProduct,
+              gender: newProduct.gender.filter(x => x !== g.k),
+            });
           }
-        />
+        }}
+      />
+      {g.l}
+    </label>
+  ))}
+</div>
+
+
 
         <button
           onClick={addProduct}
-          className="bg-[] text-white px-4 py-2 rounded"
+          className="bg-[] text-gray px-4 py-2 rounded"
         >
           Add Product
         </button>
@@ -266,11 +365,12 @@ export default function ProductsPanel() {
                   />
                 </td>
 
-                <td className="p-3">{p.name}</td>
+<td>{p.name_en}</td>
                 <td className="p-3">{p.price} ₪</td>
-                <td className="p-3">{p.description}</td>
+<td>{p.description_en}</td>
 
                 <td className="p-3">
+
                   <button
                     onClick={() =>
                       setEditProduct({
@@ -297,18 +397,40 @@ export default function ProductsPanel() {
       </div>
 
       {/* نافذة التعديل */}
-      {editProduct && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow max-w-md w-full">
-            <h3 className="font-semibold mb-3">Edit Product</h3>
+     {editProduct && (
+  <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
 
-            <input
-              className="border p-2 w-full mb-2"
-              value={editProduct.name}
-              onChange={(e) =>
-                setEditProduct({ ...editProduct, name: e.target.value })
-              }
-            />
+    {/* المودال */}
+    <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl p-6 relative">
+
+      {/* زر الإغلاق */}
+      <button
+        onClick={() => setEditProduct(null)}
+        className="absolute top-4 right-4 text-2xl text-gray-600 hover:text-black"
+      >
+        ×
+      </button>
+
+      <h3 className="font-semibold mb-4 text-lg">Edit Product</h3>
+
+          <input
+  className="border p-2 w-full mb-2"
+  placeholder="Name (English)"
+  value={editProduct.name_en}
+  onChange={(e) =>
+    setEditProduct({ ...editProduct, name_en: e.target.value })
+  }
+/>
+
+<input
+  className="border p-2 w-full mb-2"
+  placeholder="Name (Arabic)"
+  value={editProduct.name_ar}
+  onChange={(e) =>
+    setEditProduct({ ...editProduct, name_ar: e.target.value })
+  }
+/>
+
 
             <input
               className="border p-2 w-full mb-2"
@@ -334,46 +456,112 @@ export default function ProductsPanel() {
               className="border p-2 w-full mb-2"
               onChange={(e) => setEditImageFile(e.target.files[0])}
             />
+<textarea
+  className="border p-2 w-full mb-2"
+  placeholder="Description (English)"
+  value={editProduct.description_en}
+  onChange={(e) =>
+    setEditProduct({ ...editProduct, description_en: e.target.value })
+  }
+/>
 
-            <textarea
-              className="border p-2 w-full mb-3"
-              value={editProduct.description}
-              onChange={(e) =>
-                setEditProduct({ ...editProduct, description: e.target.value })
-              }
-            />
+<textarea
+  className="border p-2 w-full mb-2"
+  placeholder="Description (Arabic)"
+  value={editProduct.description_ar}
+  onChange={(e) =>
+    setEditProduct({ ...editProduct, description_ar: e.target.value })
+  }
+/>
 
-            <input
-              className="border p-2 w-full mb-2"
-              placeholder="Top Note"
-              value={editProduct.topNote}
-              onChange={(e) =>
-                setEditProduct({ ...editProduct, topNote: e.target.value })
-              }
-            />
 
-            <input
-              className="border p-2 w-full mb-2"
-              placeholder="Heart Note"
-              value={editProduct.heartNote}
-              onChange={(e) =>
-                setEditProduct({ ...editProduct, heartNote: e.target.value })
-              }
-            />
+           <input
+  className="border p-2 w-full mb-2"
+  placeholder="Top Note (EN)"
+  value={editProduct.topNote_en}
+  onChange={(e) =>
+    setEditProduct({ ...editProduct, topNote_en: e.target.value })
+  }
+/>
 
-            <input
-              className="border p-2 w-full mb-2"
-              placeholder="Base Note"
-              value={editProduct.baseNote}
-              onChange={(e) =>
-                setEditProduct({ ...editProduct, baseNote: e.target.value })
-              }
-            />
+<input
+  className="border p-2 w-full mb-2"
+  placeholder="Top Note (AR)"
+  value={editProduct.topNote_ar}
+  onChange={(e) =>
+    setEditProduct({ ...editProduct, topNote_ar: e.target.value })
+  }
+/>
+
+<input
+  className="border p-2 w-full mb-2"
+  placeholder="Heart Note (EN)"
+  value={editProduct.heartNote_en}
+  onChange={(e) =>
+    setEditProduct({ ...editProduct, heartNote_en: e.target.value })
+  }
+/>
+
+<input
+  className="border p-2 w-full mb-2"
+  placeholder="Heart Note (AR)"
+  value={editProduct.heartNote_ar}
+  onChange={(e) =>
+    setEditProduct({ ...editProduct, heartNote_ar: e.target.value })
+  }
+/>
+
+<input
+  className="border p-2 w-full mb-2"
+  placeholder="Base Note (EN)"
+  value={editProduct.baseNote_en}
+  onChange={(e) =>
+    setEditProduct({ ...editProduct, baseNote_en: e.target.value })
+  }
+/>
+
+<input
+  className="border p-2 w-full mb-2"
+  placeholder="Base Note (AR)"
+  value={editProduct.baseNote_ar}
+  onChange={(e) =>
+    setEditProduct({ ...editProduct, baseNote_ar: e.target.value })
+  }
+/>
+
+{[
+  { k: "men", l: "Men" },
+  { k: "women", l: "Women" },
+  { k: "unisex", l: "Unisex" },
+].map(g => (
+  <label key={g.k} className="flex items-center gap-2 mb-1">
+    <input
+      type="checkbox"
+      checked={editProduct.gender?.includes(g.k)}
+      onChange={(e) => {
+        if (e.target.checked) {
+          setEditProduct({
+            ...editProduct,
+            gender: [...(editProduct.gender || []), g.k],
+          });
+        } else {
+          setEditProduct({
+            ...editProduct,
+            gender: editProduct.gender.filter(x => x !== g.k),
+          });
+        }
+      }}
+    />
+    {g.l}
+  </label>
+))}
+
+
 
             <div className="flex justify-end space-x-3">
               <button
                 onClick={updateProduct}
-                className="bg-[] text-white px-4 py-2 rounded"
+                className="bg-[] text-gray px-4 py-2 rounded"
               >
                 Save
               </button>

@@ -8,6 +8,7 @@ import ChatButton from "./ChatButton.jsx";
 import CookieConsent from "react-cookie-consent";
 import Footer from "./footer.jsx";
 import { Toaster } from "react-hot-toast";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function App() {
   const { cartItems } = useCart();
@@ -137,6 +138,8 @@ useEffect(() => {
                 Login
               </Link>
             )}
+              <LanguageSwitcher />
+
           </div>
           {/* زر القائمة للهاتف + رقم السلة */}
           <div className="relative md:hidden">
@@ -217,6 +220,8 @@ useEffect(() => {
                 Login
               </Link>
             )}
+    <LanguageSwitcher />
+ 
           </div>
         </div>
       </nav>

@@ -18,7 +18,7 @@ const fmt = (v) =>
 export default function ProductDetails() {
   console.log("🔥 ProductDetails → FILE LOADED FROM:", import.meta.url);
 
-  const { t } = useTranslation();
+const { t, i18n } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart, updateQty, cartItems } = useCart();
@@ -270,11 +270,11 @@ export default function ProductDetails() {
           <div className="p-6 flex flex-col justify-between flex-1">
             <div>
               <h2 className="text-3xl font-bold mb-2 text-[]">
-                {product.name}
+{i18n.language === "ar" ? product.name_ar : product.name_en}
               </h2>
 
               <p className="text-[] mb-4 whitespace-pre-line">
-                {product.description}
+{i18n.language === "ar" ? product.description_ar : product.description_en}
               </p>
 
               <p className="text-xl font-semibold mb-6 text-[]">
@@ -346,7 +346,8 @@ export default function ProductDetails() {
                 overflowWrap: "break-word",
               }}
             >
-              {product.topNote}
+{i18n.language === "ar" ? product.topNote_ar : product.topNote_en}
+
             </p>
           </div>
 
@@ -362,8 +363,8 @@ export default function ProductDetails() {
                 overflowWrap: "break-word",
               }}
             >
-              {product.heartNote}
-            </p>
+{i18n.language === "ar" ? product.heartNote_ar : product.heartNote_en}
+ </p>
           </div>
 
           <div className="px-2">
@@ -378,7 +379,9 @@ export default function ProductDetails() {
                 overflowWrap: "break-word",
               }}
             >
-              {product.baseNote}
+              
+{i18n.language === "ar" ? product.baseNote_ar : product.baseNote_en}
+
             </p>
           </div>
         </div>
@@ -424,7 +427,7 @@ export default function ProductDetails() {
 
                     <Link to={`/product/${prod._id}`}>
                       <h3 className="text-lg font-medium leading-tight hover:underline cursor-pointer text-[] mt-2">
-                        {prod.name}
+{i18n.language === "ar" ? prod.name_ar : prod.name_en}
                       </h3>
                     </Link>
 

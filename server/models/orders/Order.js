@@ -8,15 +8,16 @@ const orderSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    customerInfo: {
-      name: { type: String, required: true },
-      email: { type: String, required: true },
-      phone: { type: String, required: true },
-      address: { type: String, required: true },
-      city: { type: String, required: true },
-      country: { type: String, required: true },
-      postalCode: { type: String },
-    },
+   customerInfo: {
+  name: { type: String, required: true },
+email: { type: String, required: false, default: "" },
+  phone: { type: String, required: true },
+  address: { type: String, required: true },
+  detailedAddress: { type: String,required: true  }, // ⭐ جديد
+  city: { type: String, required: true },
+  country: { type: String, required: true },
+},
+
     items: [
       {
         productId: { type: String },
@@ -26,8 +27,26 @@ const orderSchema = new mongoose.Schema(
         image: { type: String },
       },
     ],
-    totalAmount: { type: Number, required: true },
-    shippingFee: { type: Number, required: true, default: 0 },
+   subtotal: {
+  type: Number,
+  default: 0,
+},
+
+discount: {
+  code: { type: String, default: null },
+  type: { type: String, enum: ["percentage", "fixed"], default: null },
+  value: { type: Number, default: 0 },
+  amount: { type: Number, default: 0 },
+},
+
+
+totalAmount: {
+  type: Number,
+  required: true,
+  min: 0,
+},
+shippingFee: { type: Number, required: true, default: 0 },
+
     paymentMethod: {
       type: String,
       enum: ["cash_on_delivery", "credit_card"], // ✅ قيم رسمية

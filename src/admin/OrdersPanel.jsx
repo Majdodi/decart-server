@@ -52,7 +52,15 @@ export default function OrdersPanel() {
                     {o.customerInfo?.email}
                   </div>
                 </td>
-                <td className="p-3 font-semibold">{o.totalAmount} ₪</td>
+<td className="font-semibold">
+  {o.totalAmount} ₪
+{o.discount?.amount > 0 && (
+  <div className="text-xs text-green-600">
+    Coupon: {o.discount.code}
+    {o.discount.type === "percentage" && ` (${o.discount.value}%)`}
+  </div>
+)}
+</td>
                 <td className="p-3 capitalize">{o.status}</td>
                 <td className="p-3 flex gap-2 items-center">
                   <select
@@ -94,11 +102,11 @@ export default function OrdersPanel() {
               <p><strong>Email:</strong> {selectedOrder.customerInfo?.email}</p>
               <p><strong>Phone:</strong> {selectedOrder.customerInfo?.phone}</p>
               <p><strong>Address:</strong> {selectedOrder.customerInfo?.address}</p>
+              <p><strong>Detailed Address:</strong> {selectedOrder.customerInfo?.detailedAddress}</p>
               <p>
                 <strong>City:</strong> {selectedOrder.customerInfo?.city},{" "}
                 {selectedOrder.customerInfo?.country}
               </p>
-              <p><strong>Postal Code:</strong> {selectedOrder.customerInfo?.postalCode}</p>
             </div>
 
             {/* 🔹 المنتجات */}
@@ -135,8 +143,39 @@ alt={item.name}
             {/* 🔹 ملخص الطلب */}
             <div className="mb-4">
               <h4 className="font-semibold text-lg mb-2">Summary</h4>
-              <p><strong>Total:</strong> {selectedOrder.totalAmount} ₪</p>
-              <p><strong>Shipping:</strong> {selectedOrder.shippingFee} ₪</p>
+             <p>
+  <strong>Subtotal:</strong>{" "}
+  {selectedOrder.subtotal ?? 0} ₪
+</p>
+
+{selectedOrder.discount?.amount > 0 && (
+  <p className="text-red-600">
+    <strong>
+      Discount ({selectedOrder.discount.code}
+      {selectedOrder.discount.type === "percentage" &&
+        ` - ${selectedOrder.discount.value}%`}
+      ):
+    </strong>{" "}
+    -{selectedOrder.discount.amount} ₪
+  </p>
+)}
+
+
+<p>
+  <strong>Shipping:</strong>{" "}
+  {selectedOrder.shippingFee} ₪
+</p>
+
+<p className="font-bold text-lg border-t pt-2">
+  <strong>Total:</strong>{" "}
+  {selectedOrder.totalAmount} ₪
+</p>
+{selectedOrder.discount && (
+  <p className="text-xs text-gray-500">
+    Coupon type: {selectedOrder.discount.type}
+  </p>
+)}
+
               <p><strong>Payment Method:</strong> {selectedOrder.paymentMethod}</p>
               <p><strong>Status:</strong> {selectedOrder.status}</p>
               <p>

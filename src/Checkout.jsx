@@ -21,6 +21,7 @@ export default function Checkout() {
     address: '',
     apartment: '',
     city: '',
+    detailedAddress: '',
     phone: '',
     paymentMethod: 'cod',
     cardNumber: '',
@@ -46,14 +47,34 @@ export default function Checkout() {
     0
   );
 
-  const regionFees = {
-    'الضفة': 20,
-    'القدس': 30,
-    'عرب الداخل': 50
-  };
+ const westBankCities = [
+  "الخليل",
+  "بيت لحم",
+  "جنين",
+  "رام الله والبيرة",
+  "سلفيت",
+  "طوباس",
+  "طولكرم",
+  "قلقيلية",
+  "نابلس",
+  "أريحا"
+];
 
-  const shippingFee =
-    form.paymentMethod === 'cod' ? regionFees[form.address] || 0 : 0;
+const regionFees = {
+  "القدس": 30,
+"الداخل": 75,
+  "عين نقوبا – أبو غوش – عين رافة": 45
+};
+
+const shippingFee =
+  form.paymentMethod === "cod"
+    ? (
+        westBankCities.includes(form.address)
+          ? 20
+          : regionFees[form.address] || 0
+      )
+    : 0;
+
 
   let total = subtotal;
   if (discount) {
@@ -128,6 +149,7 @@ const handleApplyDiscount = async () => {
       const requestBody = {
         form: {
           ...form,
+          detailedAddress: form.detailedAddress,
           paymentMethod:
             form.paymentMethod === "cod"
               ? "cash_on_delivery"
@@ -143,7 +165,6 @@ const handleApplyDiscount = async () => {
 
         discountCode,
         shippingFee,
-        total,
         userId: user?._id || null,
       };
 
@@ -200,6 +221,11 @@ const handleApplyDiscount = async () => {
         return /^[A-Za-z0-9\u0600-\u06FF\s\-]*$/.test(value)
           ? ""
           : "المدخل غير صالح";
+
+          case "detailedAddress":
+  return value.trim().length < 5
+    ? "الرجاء إدخال العنوان التفصيلي"
+    : "";
 
       default:
         return "";
@@ -266,9 +292,20 @@ const handleApplyDiscount = async () => {
           className="w-full p-3 border rounded mb-4 bg-[] text-[]"
         >
           <option value="" disabled hidden>{t('selectRegion')}</option>
-          <option value="الضفة">الضفة</option>
-          <option value="القدس">القدس</option>
-          <option value="عرب الداخل">عرب الداخل</option>
+<option value="الخليل">الخليل</option>
+  <option value="بيت لحم">بيت لحم</option>
+  <option value="جنين">جنين</option>
+  <option value="رام الله والبيرة">رام الله والبيرة</option>
+  <option value="سلفيت">سلفيت</option>
+  <option value="طوباس">طوباس</option>
+  <option value="طولكرم">طولكرم</option>
+  <option value="قلقيلية">قلقيلية</option>
+  <option value="نابلس">نابلس</option>
+  <option value="أريحا">أريحا</option>
+            <option value="القدس">القدس</option>
+            <option value="عين نقوبا – أبو غوش – عين رافة">عين نقوبا – أبو غوش – عين رافة</option>
+
+          <option value="الداخل">الداخل</option>
         </select>
 
         <div className="mb-4">
@@ -296,10 +333,27 @@ const handleApplyDiscount = async () => {
                 ${errors.city ? "border-red-500" : "border-gray-300"}`}
               required
             />
+
             {errors.city && form.city.trim() !== "" && (
               <p className="text-red-600 text-sm mt-1">{errors.city}</p>
             )}
           </div>
+     <div className="mb-6">
+  <input
+    name="detailedAddress"
+    value={form.detailedAddress}
+    onChange={handleChange}
+    placeholder="Detailed address"
+    className={`w-full p-3 border rounded 
+      ${errors.detailedAddress ? "border-red-500" : "border-gray-300"}`}
+    required
+  />
+
+  {errors.detailedAddress && form.detailedAddress.trim() === "" && (
+    <p className="text-red-600 text-sm mt-1">الرجاء إدخال العنوان التفصيلي</p>
+  )}
+</div>
+
         </div>
 
         <div className="mb-4">
@@ -326,7 +380,7 @@ const handleApplyDiscount = async () => {
             placeholder={t("email") || "Email"}
             className={`w-full p-3 border rounded bg-[] text-[]
               ${errors.email ? "border-red-500" : "border-gray-300"}`}
-            required
+            
           />
           {errors.email && form.email.trim() !== "" && (
             <p className="text-red-600 text-sm mt-1">{errors.email}</p>
