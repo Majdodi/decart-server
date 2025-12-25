@@ -5,7 +5,8 @@ const Settings = require("../../models/Settings");
 const { verifyToken, verifyAdmin } = require("../../middleware/verifyToken");
 
 // استدعاء supabase + multer من server.js
-const { supabase, upload } = require("../../server");
+const upload = require("../../upload");
+const supabase = require("../../supabase");
 
 // يرفع الهيرو على SUPABASE
 router.post(
