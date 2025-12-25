@@ -5,7 +5,8 @@ const Product = require("../models/Product");
 const { verifyToken, verifyAdmin } = require("../middleware/verifyToken");
 
 // جايين من server.js
-const { upload, supabase } = require("../server");
+const upload = require("../upload");
+const supabase = require("../supabase");
 const bucket = process.env.SUPABASE_BUCKET;
 
 

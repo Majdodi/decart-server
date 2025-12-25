@@ -1,51 +1,7 @@
-//server/server.js
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
-const multer = require("multer");
-
-console.log("========== ENV DEBUG START ==========");
-console.log("NODE_ENV =", process.env.NODE_ENV);
-console.log("process.env.PORT =", process.env.PORT);
-console.log("process.env.SUPABASE_URL =", process.env.SUPABASE_URL);
-console.log("process.env.SUPABASE_KEY =", process.env.SUPABASE_KEY);
-console.log("process.env keys sample =", Object.keys(process.env).slice(0, 20));
-console.log("========== ENV DEBUG END ==========");
-
-
-
-
-
-
-
-// =====================================================
-//  📌 Load correct .env file BEFORE ANYTHING
-// =====================================================
-
-
-console.log(
-  "SUPABASE_KEY =",
-  process.env.SUPABASE_ANON_KEY?.slice(0, 20) + "..."
-);
-
-// =====================================================
-//  📌 SUPABASE CLIENT + UPLOAD MEMORY
-// =====================================================
-const { createClient } = require("@supabase/supabase-js");
-
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
-  console.error("❌ SUPABASE ENV MISSING");
-  process.exit(1);
-}
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-);
-
-module.exports.supabase = supabase;
-
 
 // =====================================================
 //  📌 EXPRESS APP
@@ -69,14 +25,6 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 app.use("/uploads", express.static("uploads"));
 
 // =====================================================
-//  📌 LOG EVERY REQUEST
-// =====================================================
-app.use((req, res, next) => {
-  console.log("➡️", req.method, req.originalUrl);
-  next();
-});
-
-// =====================================================
 //  📌 ROUTES
 // =====================================================
 app.use("/api/products", require("./routes/product"));
@@ -97,7 +45,10 @@ app.use("/api/admin/discounts", require("./routes/admin/discounts"));
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.error("❌ MongoDB Error:", err));
+  .catch((err) => {
+    console.error("❌ MongoDB Error:", err);
+    process.exit(1);
+  });
 
 // =====================================================
 //  📌 SERVER START
@@ -106,6 +57,5 @@ app.get("/", (req, res) => res.send("Decart backend running ✔"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
-  console.log(`🚀 Server running on port ${PORT} (${process.env.NODE_ENV})`)
+  console.log(`🚀 Server running on port ${PORT}`)
 );
-
