@@ -202,23 +202,49 @@ router.put(
       if (images.length === 0) images = ["/images/fallback.png"];
 
       // ✅ هنا الحل الحقيقي
-      const updateData = {
-        ...req.body,
-        images,
-        gender: Array.isArray(req.body.gender)
-          ? req.body.gender
-          : req.body.gender
-          ? [req.body.gender]
-          : [],
-      };
+    const updateData = {};
 
-      console.log("🟣 UPDATE DATA:", updateData);
+// 🔤 Strings
+[
+  "name_en",
+  "name_ar",
+  "description_en",
+  "description_ar",
+  "topNote_en",
+  "topNote_ar",
+  "heartNote_en",
+  "heartNote_ar",
+  "baseNote_en",
+  "baseNote_ar",
+  "category",
+].forEach((field) => {
+  if (req.body[field] && req.body[field].trim() !== "") {
+    updateData[field] = req.body[field];
+  }
+});
 
-      const updated = await Product.findByIdAndUpdate(
-        req.params.id,
-        updateData,
-        { new: true }
-      );
+// 💰 Numbers
+if (req.body.price !== undefined) updateData.price = req.body.price;
+if (req.body.stock !== undefined) updateData.stock = req.body.stock;
+
+// 🖼️ Images
+if (images.length) updateData.images = images;
+
+// 🚻 Gender (array)
+if (req.body.gender) {
+  updateData.gender = Array.isArray(req.body.gender)
+    ? req.body.gender
+    : [req.body.gender];
+}
+
+console.log("🟣 FINAL UPDATE DATA:", updateData);
+
+const updated = await Product.findByIdAndUpdate(
+  req.params.id,
+  { $set: updateData },
+  { new: true }
+);
+
 
       console.log("✅ SAVED GENDER:", updated.gender);
 

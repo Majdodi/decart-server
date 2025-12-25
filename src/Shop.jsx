@@ -13,7 +13,8 @@ const fmt = (v) =>
   }).format(v);
 
 export default function Shop() {
-  const { t } = useTranslation();
+const { i18n } = useTranslation();
+const lang = i18n.language; // "en" أو "ar"
   const [products, setProducts] = useState([]);
 
 const [filterOpen, setFilterOpen] = useState(false);
@@ -133,9 +134,9 @@ const filteredProducts = [...products]
   .sort((a, b) => {
     switch (filters.sort) {
       case "az":
-        return a.name.localeCompare(b.name);
+  return getName(a).localeCompare(getName(b), lang);
       case "za":
-        return b.name.localeCompare(a.name);
+  return getName(b).localeCompare(getName(a), lang);
       case "priceLow":
         return a.price - b.price;
       case "priceHigh":
@@ -176,6 +177,10 @@ const hasActiveFilters =
   filters.sort !== "az";
 
 
+const getName = (p) =>
+  lang === "ar"
+    ? p.name_ar || p.name_en
+    : p.name_en || p.name_ar;
 
 
   return (
@@ -438,14 +443,14 @@ console.log("🟧 RAW IMAGES FIELD:", product.images);
                 <ProductCardSlider
                 
                   images={images}
-                  name={product.name}
+                  name={getName(product)}
                   productId={product._id}
                 />
               </div>
 
               <Link to={`/product/${product._id}`}>
                 <h3 className="mt-2 text-lg font-medium text-siteText">
-                  {product.name}
+                  {getName(product)}
                 </h3>
                 <p className="text-sitePrice">{fmt(product.price)}</p>
               </Link>
