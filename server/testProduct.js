@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import Product from "./models/Product.js";
 
-dotenv.config({ path: "./.env.development" });
 
 console.log("📡 Connecting to:", process.env.MONGO_URI);
 await mongoose.connect(process.env.MONGO_URI);

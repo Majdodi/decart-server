@@ -1,22 +1,29 @@
 //server/server.js
 const express = require("express");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
 const multer = require("multer");
 
+console.log("========== ENV DEBUG START ==========");
+console.log("NODE_ENV =", process.env.NODE_ENV);
+console.log("process.env.PORT =", process.env.PORT);
+console.log("process.env.SUPABASE_URL =", process.env.SUPABASE_URL);
+console.log("process.env.SUPABASE_KEY =", process.env.SUPABASE_KEY);
+console.log("process.env keys sample =", Object.keys(process.env).slice(0, 20));
+console.log("========== ENV DEBUG END ==========");
+
+
+
+
+
+
+
 // =====================================================
 //  📌 Load correct .env file BEFORE ANYTHING
 // =====================================================
-const envPath = path.resolve(
-  __dirname,
-  `.env.${process.env.NODE_ENV || "development"}`
-);
-dotenv.config({ path: envPath });
 
-console.log("🔧 Loaded ENV:", envPath);
-console.log("SUPABASE_URL =", process.env.SUPABASE_URL);
+
 console.log(
   "SUPABASE_KEY =",
   process.env.SUPABASE_ANON_KEY?.slice(0, 20) + "..."
@@ -27,16 +34,18 @@ console.log(
 // =====================================================
 const { createClient } = require("@supabase/supabase-js");
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-module.exports.upload = upload;
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+  console.error("❌ SUPABASE ENV MISSING");
+  process.exit(1);
+}
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
+  process.env.SUPABASE_KEY
 );
 
 module.exports.supabase = supabase;
+
 
 // =====================================================
 //  📌 EXPRESS APP
