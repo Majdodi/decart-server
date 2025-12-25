@@ -13,7 +13,7 @@ const fmt = (v) =>
   }).format(v);
 
 export default function Shop() {
-const { i18n } = useTranslation();
+const { t, i18n } = useTranslation();
 const lang = i18n.language; // "en" أو "ar"
   const [products, setProducts] = useState([]);
 
