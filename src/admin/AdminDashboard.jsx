@@ -7,17 +7,12 @@ import { useAuth } from "../AuthContext";
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { logout } = useAuth();
-const { user } = useAuth();
 
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
-      console.log("🧭 AdminDashboard mounted");
-  console.log("👤 Current user from context:", user);
-  console.log("📡 Fetching stats with token:", localStorage.getItem('token'));
-
     const fetchStats = async () => {
       setLoading(true);
       setErrorMsg("");
@@ -42,7 +37,6 @@ const res = await api.get("/admin/stats", {
 
         setStats(res.data || {});
       } catch (err) {
-        console.error("❌ Error fetching dashboard stats:", err);
         const status = err?.response?.status;
 
         if (status === 401 || status === 403) {

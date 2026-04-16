@@ -63,5 +63,140 @@
   "english": "English",
   "arabic": "العربية",
   "logout": "Logout",
-  "shopOurProducts": "Shop Our Products"
+  "shopOurProducts": "Shop Our Products",
+  "privacyPolicy": {
+    "title": "Privacy Policy and Personal Data Protection",
+    "backHome": "Back to Home"
+  },
+  "cookie": {
+    "bannerTitle": "We value your privacy",
+    "bannerMessage": "We use cookies and other technologies to personalize your experience, perform marketing, and collect analytics.",
+    "learnMore": "Learn more in our",
+    "managePreferences": "Manage preferences",
+    "accept": "Accept",
+    "decline": "Decline",
+    "preferencesTitle": "Cookie preferences",
+    "acceptAll": "Accept all",
+    "declineAll": "Decline all",
+    "saveChoices": "Save my choices",
+    "controlTitle": "You control your data",
+    "controlIntro": "Learn more about the cookies we use, and choose which cookies to allow.",
+    "requiredLabel": "Required",
+    "requiredDesc": "These cookies are necessary for the site to function properly, including capabilities like logging in and adding items to the cart.",
+    "personalizationLabel": "Personalization",
+    "personalizationDesc": "These cookies store details about your actions to personalize your next visit to the website.",
+    "marketingLabel": "Marketing",
+    "marketingDesc": "These cookies are used to optimize marketing communications and show you ads on other sites.",
+    "analyticsLabel": "Analytics",
+    "analyticsDesc": "These cookies help us understand how you interact with the site. We use this data to identify areas to improve."
+  },
+  "collection": {
+    "subtitle": "OUR COLLECTION",
+    "title": "FOUR DISTINCTIVE FRAGRANCES",
+    "badge": "EXTRAIT DE PARFUM",
+    "explore": "EXPLORE THE SCENT",
+    "featured": "Featured"
+  },
+  "terms": {
+  "title": "Terms of Service",
+  "lastUpdated": "Last updated",
+  "sections": {
+    "s1": {
+      "title": "SECTION 1 – Introduction",
+      "p1": "Welcome to decart.",
+      "p2": "This website is operated from Palestine and provides online perfume sales services. By using this website, creating an account, or placing any order, you acknowledge and agree to be fully bound by these Terms of Service.",
+      "p3": "If you do not agree to any part of these terms, please stop using the website and do not use its services."
+    },
+    "s2": {
+      "title": "SECTION 2 – Service Description",
+      "p1": "Decart operates as an online store specializing in perfumes.",
+      "p2": "All orders are placed through the website only.",
+      "p3": "Delivery is available within Palestine. International shipping is provided only after direct contact with the store and prior agreement on all shipping and payment details."
+    },
+    "s3": {
+      "title": "SECTION 3 – Accounts & Registration",
+      "p1": "Some website features require creating an account using an email address and password.",
+      "p2": "The minimum age to use the website is 13.",
+      "p3": "You are fully responsible for the accuracy of the information you provide and for keeping your account details secure.",
+      "p4": "Decart reserves the right to suspend or delete any account if these Terms are violated, without prior notice."
+    },
+    "s4": {
+      "title": "SECTION 4 – Orders & Payment",
+      "p1": "The approved payment method is Cash on Delivery (COD).",
+      "p2": "You may cancel an order within 12 hours from the time of order confirmation.",
+      "p3": "After 12 hours, the order cannot be canceled under any circumstances."
+    },
+    "s5": {
+      "title": "SECTION 5 – Returns & Exchanges",
+      "p1": "No returns or exchanges are available in general.",
+      "p2": "Returns are accepted only in the following cases:",
+      "bullets": [
+        "You received an item different from what you ordered.",
+        "The perfume arrived damaged, broken, or defective."
+      ],
+      "p3": "No exchanges are available under any circumstances.",
+      "p4": "Any issue must be reported immediately upon delivery."
+    },
+    "s6": {
+      "title": "SECTION 6 – Shipping & Delivery",
+      "p1": "Delivery is available across all areas of Palestine.",
+      "p2": "Local delivery time ranges from 2 to 5 business days.",
+      "p3": "International shipping is arranged only after contacting us via:",
+      "bullets": [
+        "Email",
+        "Social media",
+        "WhatsApp"
+      ],
+      "p4": "and after prior agreement on all details.",
+      "p5": "The shipping company is responsible for delays beyond decart’s control."
+    },
+    "s7": {
+      "title": "SECTION 7 – Prohibited Use",
+      "p1": "You are prohibited from doing any of the following:",
+      "bullets": [
+        "Misusing the website or its services.",
+        "Reselling products without prior written permission.",
+        "Copying or using any website content (images, text, designs).",
+        "Any use that violates laws or public morals."
+      ]
+    },
+    "s8": {
+      "title": "SECTION 8 – Intellectual Property",
+      "p1": "All content on the website, including the brand name, images, designs, text, and products, is the exclusive property of decart.",
+      "p2": "Any use or republication of content is prohibited without explicit prior permission from the store."
+    },
+    "s9": {
+      "title": "SECTION 9 – Disclaimer",
+      "p1": "Decart is not responsible for:",
+      "bullets": [
+        "Misuse of products.",
+        "Any reactions or allergies resulting from perfume use.",
+        "Indirect damages or damages caused by incorrect use."
+      ],
+      "p2": "Your use of the website and products is entirely at your own risk."
+    },
+    "s10": {
+      "title": "SECTION 10 – Termination",
+      "p1": "Decart reserves the full right to:",
+      "bullets": [
+        "Suspend or delete any account.",
+        "Deny any user access to the website or services."
+      ],
+      "p2": "This may be done without prior notice if these Terms are violated."
+    },
+    "s11": {
+      "title": "SECTION 11 – Governing Law",
+      "p1": "These Terms are governed and interpreted according to the laws of Palestine.",
+      "p2": "Any dispute arising from the use of the website will be resolved under applicable local laws."
+    },
+    "s12": {
+      "title": "SECTION 12 – Contact",
+      "p1": "For any questions about these Terms of Service, please contact us at:",
+      "email": "decartps@outlook.com"
+    }
+  }
+}
+
+
+
 }

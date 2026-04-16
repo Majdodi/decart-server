@@ -25,6 +25,8 @@ import AdminProductsPage from "./AdminProductsPage.jsx";
 import Unauthorized from "./Unauthorized.jsx";
 import OrderSuccess from './OrderSuccess.jsx';
 import OrdersPage from "./OrdersPage.jsx";
+import PrivacyPolicy from "./PrivacyPolicy.jsx";
+import NotFound from "./NotFound.jsx";
 
 import AdminLayout from "./admin/AdminLayout";
 import AdminDashboard from "./admin/AdminDashboard";
@@ -34,6 +36,9 @@ import UsersPanel from "./admin/UsersPanel";
 import MessagesPanel from "./admin/MessagesPanel";
 import SettingsPanel from "./admin/SettingsPanel";
 import DiscountsPanel from "./admin/DiscountsPanel";
+import TermsOfService from "./TermsOfService";
+
+
 ReactDOM.createRoot(document.getElementById("root")).render(
     <AuthProvider>
       <CartProvider>
@@ -48,6 +53,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route path="checkout" element={<Checkout />} />
               <Route path="order-success" element={<OrderSuccess />} />
 <Route path="/orders" element={<OrdersPage />} />
+              <Route path="privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+
 
               {/* تسجيل */}
               <Route path="login" element={<Login />} />
@@ -82,6 +90,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
               {/* غير مصرح */}
               <Route path="unauthorized" element={<Unauthorized />} />
+              <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
         </BrowserRouter>

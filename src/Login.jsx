@@ -26,7 +26,7 @@ export default function Login() {
       const data = res.data;
 
       login(data.user, data.token, remember);
-     toast.success("Login Successful");
+     toast.success("You have been logged in successfully.");
 
       navigate(data.user.role === "admin" ? "/admin" : from, { replace: true });
 
@@ -34,8 +34,8 @@ export default function Login() {
       const msg =
         err.response?.data?.error ||
         err.response?.data?.message ||
-        "Login failed. Please try again.";
-      alert(msg);
+        "Could not sign you in. Please check your details and try again.";
+      toast.error(msg);
     }
   };
 

@@ -18,14 +18,12 @@ export default function ForgotPassword() {
       });
 
       const data = await res.json();
-      console.log('[ForgotPassword] server response:', data);
 
-      if (!res.ok) throw new Error(data.error || 'Server error');
+      if (!res.ok) throw new Error(data.error || 'A technical error occurred. Please try again.');
 
       setState({ loading: false, message: data.message, error: '' });
     } catch (err) {
-      console.error('[ForgotPassword] error:', err);
-      setState({ loading: false, message: '', error: err.message || 'Server error' });
+      setState({ loading: false, message: '', error: err.message || 'A technical error occurred. Please try again.' });
     }
   };
 
@@ -56,8 +54,8 @@ export default function ForgotPassword() {
 
         </form>
 
-        {state.message && <p className="text-green-700 mt-4">{state.message}</p>}
-        {state.error && <p className="text-red-600 mt-4">{state.error}</p>}
+        {state.message && <p className="text-siteText mt-4">{state.message}</p>}
+        {state.error && <p className="text-siteText mt-4 border-l-2 border-siteDark pl-3">{state.error}</p>}
       </div>
     </div>
   );

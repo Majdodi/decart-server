@@ -2,8 +2,10 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import { useAuth } from "../AuthContext";
+import { useConfirm } from "../contexts/ConfirmContext";
 
 export default function UsersPanel() {
+  const { showConfirm } = useConfirm();
   const [users, setUsers] = useState([]);
   const { token } = useAuth();
 
@@ -26,11 +28,18 @@ export default function UsersPanel() {
   };
 
   const deleteUser = (id) => {
-    if (!window.confirm("Delete user?")) return;
-    api
-      .delete(`/admin/user/${id}`)
-      .then(() => setUsers((prev) => prev.filter((u) => u._id !== id)))
-      .catch(console.error);
+    showConfirm({
+      title: "Delete User",
+      message: "Are you sure you want to delete this user? This action cannot be undone.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      onConfirm: () => {
+        api
+          .delete(`/admin/user/${id}`)
+          .then(() => setUsers((prev) => prev.filter((u) => u._id !== id)))
+          .catch(console.error);
+      },
+    });
   };
 
   return (

@@ -6,7 +6,6 @@ const Discount = require('../models/Discount');
 (async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('✅ MongoDB connected');
 
     const docs = [
       {
@@ -35,9 +34,7 @@ const Discount = require('../models/Discount');
 
     await Discount.deleteMany({});
     await Discount.insertMany(docs);
-    console.log('🌱 Seeded discounts');
   } catch (e) {
-    console.error(e);
   } finally {
     await mongoose.disconnect();
     process.exit(0);

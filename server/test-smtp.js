@@ -13,9 +13,7 @@ async function testSMTP() {
   });
 
   try {
-    console.log("🔌 Verifying connection...");
     await transporter.verify();
-    console.log("✅ Connected successfully!");
 
     await transporter.sendMail({
       from: '"Decart Test" <shop@decart.ps>',
@@ -23,14 +21,7 @@ async function testSMTP() {
       subject: "SMTP Test from localhost",
       text: "✅ This email confirms SMTP works!",
     });
-
-    console.log("✅ Email sent successfully!");
-  } catch (err) {
-    console.error("❌ SMTP Error:");
-    console.error("Message:", err.message);
-    console.error("Code:", err.code);
-    console.error("Response:", err.response);
-  }
+  } catch {}
 }
 
 testSMTP();

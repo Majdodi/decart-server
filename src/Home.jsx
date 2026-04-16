@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import axios from "axios";
 import ProductImageHover from "./ProductImageHover";
 import ProductCardSlider from "./ProductCardSlider";
+import CollectionSection from "./CollectionSection";
 import api from "./api";
 import { useAuth } from "./AuthContext"; 
 
@@ -13,7 +14,7 @@ const fmt = (v) =>
   new Intl.NumberFormat("he-IL", { style: "currency", currency: "ILS" }).format(v);
 
 export default function Home() {
-  const { t } = useTranslation();
+const { t, i18n } = useTranslation();
   const { token } = useAuth();   // ⬅️ السطر الناقص فقط
   const [products, setProducts] = useState([]);
   const [hero, setHero] = useState(null);
@@ -21,7 +22,7 @@ export default function Home() {
 useEffect(() => {
   api.get("/admin/settings")
     .then(res => setHero(res.data.heroImage))
-    .catch(console.error);
+    .catch(() => {});
 }, []);
 
 
@@ -29,10 +30,9 @@ useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_API_URL}/products`)
       .then((res) => {
-        console.log("📦 Products from backend:", res.data);
         setProducts(res.data);
       })
-      .catch((err) => console.error("❌ Error fetching products:", err));
+      .catch(() => {});
   }, []);
 
   return (
@@ -99,7 +99,7 @@ backgroundImage: `url(${hero})`,
                   >
                     <ProductCardSlider
                       images={imgs}
-                      name={product.name}
+  name={i18n.language === "ar" ? product.name_ar : product.name_en}
                       productId={product._id}
                     />
                   </div>
@@ -107,7 +107,7 @@ backgroundImage: `url(${hero})`,
                   {/* الاسم والسعر */}
                   <Link to={`/product/${product._id}`}>
                     <h3 className="text-lg font-medium leading-tight text-[] hover:underline cursor-pointer">
-                      {product.name}
+  {i18n.language === "ar" ? product.name_ar : product.name_en}
                     </h3>
                   </Link>
 
@@ -131,6 +131,11 @@ backgroundImage: `url(${hero})`,
           </Link>
         </div>
       </div>
+
+      {/* OUR COLLECTION */}
+      <CollectionSection
+        products={products.filter((p) => p.featured)}
+      />
 
       <ChatButton />
     </div>

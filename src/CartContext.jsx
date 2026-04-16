@@ -3,6 +3,7 @@ import React, { createContext, useState, useContext, useEffect, useRef } from "r
 import api from "./api";
 import { useAuth } from "./AuthContext";
 import fixImage from "./utils/fixImage";
+import toast from "react-hot-toast";
 
 const CartContext = createContext();
 
@@ -11,18 +12,14 @@ export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const firstLoad = useRef(true);
 
-  console.log("👁️ CART PROVIDER RENDER — User:", user);
-
   // ✅ Load from LocalStorage
   useEffect(() => {
     try {
       const saved = localStorage.getItem("cart");
-      console.log("📌 RAW localStorage:", saved);
 
       if (!saved || saved === "null") return;
 
       const parsed = JSON.parse(saved);
-      console.log("📌 parsed localStorage:", parsed);
 
       if (Array.isArray(parsed)) {
         // ✅ Normalize images when loading from localStorage
@@ -35,19 +32,9 @@ export function CartProvider({ children }) {
   : [fixImage(item.image)]
 
         }));
-parsed.forEach(item => {
-  console.log("🟨 NORMALIZED LOCALSTORAGE ITEM =", {
-    id: item._id,
-    raw: item.images,
-  });
-});
-
-
-        console.log("📥 SET CART from LS:", normalized);
         setCartItems(normalized);
       }
-    } catch (err) {
-      console.error("❌ LocalStorage parse error:", err);
+    } catch {
     }
   }, []);
 
@@ -57,7 +44,6 @@ parsed.forEach(item => {
       firstLoad.current = false;
       return;
     }
-    console.log("💾 Saving cart → LS:", cartItems);
     if (!user?._id) {
       localStorage.setItem("cart", JSON.stringify(cartItems));
     }
@@ -68,27 +54,17 @@ parsed.forEach(item => {
     if (!user?._id) return;
 
     const syncCart = async () => {
-      console.log("🔄 SYNC START — user logged:", user._id);
-
       try {
         const localCart = JSON.parse(localStorage.getItem("cart")) || [];
-        console.log("⬆️ LOCAL CART → SERVER:", localCart);
 
         for (const item of localCart) {
           if (!item._id) {
-            console.warn("⚠️ SKIPPED — Missing ID:", item);
             continue;
           }
           if (!item.qty || item.qty < 1) {
-            console.warn("⚠️ SKIPPED — Invalid qty:", item);
             continue;
           }
 
-          console.log("📡 POST → /cart/add | Data:", {
-            userId: user._id,
-            productId: item._id,
-            qty: item.qty,
-          });
           await api.post("/cart/add", {
             userId: user._id,
             productId: item._id,
@@ -96,9 +72,7 @@ parsed.forEach(item => {
           });
         }
 
-        console.log("📥 Fetching final cart from server...");
         const res = await api.get(`/cart/${user._id}`);
-        console.log("✅ SERVER CART:", res.data);
 
         const serverItems = (res.data?.items || []).map(item => ({
           ...item,
@@ -112,17 +86,13 @@ parsed.forEach(item => {
         
         setCartItems(serverItems);
         localStorage.setItem("cart", JSON.stringify(serverItems));
-
-        console.log("✅ SYNC DONE ✅");
         // ✅ Clear local copy after syncing to avoid duplicate syncing
         localStorage.removeItem("cart");
         sessionStorage.removeItem("cart");
         setCartItems(serverItems);
         localStorage.removeItem("cart");
 
-      } catch (err) {
-        console.error("❌ SYNC ERROR:", err);
-      }
+      } catch {}
     };
 
     syncCart();
@@ -130,16 +100,15 @@ parsed.forEach(item => {
 
   // ✅ Add item
 const addToCart = async (product, qty = 1) => {
-  console.log("➕ ADD:", product, "Qty:", qty);
-
   if (!product?._id) {
-    console.error("❌ Cannot add product — Missing _id:", product);
-    alert("Product missing ID, Backend issue!");
+    toast.error("This item could not be added. Please try again later.");
     return;
   }
 
   const normalizedProduct = {
     ...product,
+   name_ar: product.name_ar || product.product?.name_ar || product.name || "",
+  name_en: product.name_en || product.product?.name_en || product.name || "",
     images: Array.isArray(product.images)
       ? product.images.map(x => fixImage(x))
       : typeof product.images === "string"
@@ -152,8 +121,6 @@ const addToCart = async (product, qty = 1) => {
     const updated = exists
       ? prev.map(p => p._id === normalizedProduct._id ? { ...p, qty: p.qty + qty } : p)
       : [...prev, { ...normalizedProduct, qty }];
-
-    console.log("📝 CART AFTER ADD:", updated);
     return updated;
   });
 
@@ -164,9 +131,7 @@ const addToCart = async (product, qty = 1) => {
         productId: normalizedProduct._id,
         qty,
       });
-    } catch (err) {
-      console.error("❌ ADD API ERROR:", err);
-    }
+    } catch {}
   }
 };
 
@@ -186,9 +151,7 @@ const addToCart = async (product, qty = 1) => {
           productId,
           qty: newQty,
         });
-      } catch (err) {
-        console.error("❌ UPDATE API ERROR:", err);
-      }
+      } catch {}
     }
   };
 
@@ -199,9 +162,7 @@ const addToCart = async (product, qty = 1) => {
     if (user?._id) {
       try {
         await api.delete(`/cart/remove/${user._id}/${productId}`);
-      } catch (err) {
-        console.error("❌ REMOVE API ERROR:", err);
-      }
+      } catch {}
     }
   };
 
@@ -210,7 +171,6 @@ const clearCart = () => {
   setCartItems([]);
   localStorage.removeItem("cart");
   sessionStorage.removeItem("cart");
-  console.log("🗑️ CART CLEARED!");
 };
 
   return (

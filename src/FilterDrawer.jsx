@@ -85,7 +85,7 @@ export default function FilterDrawer({
             />
           </div>
           <p className="text-xs text-siteText opacity-70">
-            The highest price is ₪{maxPrice}
+            The highest price is 200 ₪
           </p>
         </div>
 

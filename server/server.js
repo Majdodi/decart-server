@@ -1,7 +1,14 @@
+const path = require("path");
+
+// تحميل متغيرات البيئة أولاً (قبل أي require يستخدمها)
+require("dotenv").config({ path: path.join(__dirname, ".env") });
+require("dotenv").config({
+  path: path.join(__dirname, ".env." + (process.env.NODE_ENV || "development")),
+});
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const path = require("path");
 
 // =====================================================
 //  📌 EXPRESS APP
@@ -14,6 +21,8 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:5175",
       "https://decart.ps",
       "https://www.decart.ps",
     ],
@@ -44,9 +53,7 @@ app.use("/api/admin/discounts", require("./routes/admin/discounts"));
 // =====================================================
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => {
-    console.error("❌ MongoDB Error:", err);
     process.exit(1);
   });
 
@@ -56,6 +63,4 @@ mongoose
 app.get("/", (req, res) => res.send("Decart backend running ✔"));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
-  console.log(`🚀 Server running on port ${PORT}`)
-);
+app.listen(PORT);

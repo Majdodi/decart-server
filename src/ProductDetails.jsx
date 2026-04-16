@@ -8,6 +8,7 @@ import { FiTrash } from "react-icons/fi";
 import ChatButton from "./ChatButton";
 import ProductCardSlider from "./ProductCardSlider";
 import fixImage from "./utils/fixImage";
+import NotFound from "./NotFound.jsx";
 
 const fmt = (v) =>
   new Intl.NumberFormat("he-IL", {
@@ -16,8 +17,6 @@ const fmt = (v) =>
   }).format(v);
 
 export default function ProductDetails() {
-  console.log("🔥 ProductDetails → FILE LOADED FROM:", import.meta.url);
-
 const { t, i18n } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -27,6 +26,7 @@ const { t, i18n } = useTranslation();
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [notFound, setNotFound] = useState(false);
 
   // للسحب/التمرير في السلايدر
   const [startX, setStartX] = useState(0);
@@ -61,11 +61,11 @@ const { t, i18n } = useTranslation();
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setQty(1);
+    setNotFound(false);
 
     api
       .get(`/products/${id}`)
       .then((res) => {
-        console.log("📥 Product API response =", res.data);
         const data = res.data;
 
         let imagesArray = [];
@@ -81,13 +81,9 @@ const { t, i18n } = useTranslation();
         }
 
         setProduct({ ...data, images: imagesArray });
-        console.log("🟩 Stored product data =", {
-          ...data,
-          images: imagesArray,
-        });
       })
-      .catch((err) => {
-        console.error("❌ Error loading product:", err);
+      .catch(() => {
+        setNotFound(true);
         setProduct(null);
       });
 
@@ -99,6 +95,15 @@ const { t, i18n } = useTranslation();
       .catch(() => setRelated([]));
   }, [id]);
 
+  if (notFound) {
+    return (
+      <NotFound
+        title={t("productNotFound")}
+        message="This product page has been removed or is no longer available."
+      />
+    );
+  }
+
   if (!product) {
     return (
       <div className="text-center mt-20 text-xl text-[]">
@@ -108,8 +113,6 @@ const { t, i18n } = useTranslation();
   }
 
   const images = product.images || [];
-  console.log("🟦 ProductDetails → IMAGES ARRAY =", images);
-  console.log("🟦 LENGTH =", images.length);
 
   const inCart = cartItems.find((p) => p._id === product._id);
 
@@ -141,11 +144,6 @@ const { t, i18n } = useTranslation();
     addToCart(product, qty);
     navigate("/checkout");
   };
-
-  console.log(
-    "🟥 Slider transform =",
-    `-${currentIndex * 100}% | images = ${images.length}`
-  );
 
   return (
     <div className="flex flex-col overflow-x-hidden">

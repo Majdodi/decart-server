@@ -8,15 +8,12 @@ const Product = require("./models/Product");
 
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("🔥 Connected to MongoDB"))
-  .catch((err) => console.error("❌ Error:", err));
+  .catch(() => process.exit(1));
 
 async function migrate() {
   try {
     const products = await Product.find();
     let updated = 0;
-
-    console.log(`📦 Found ${products.length} products`);
 
     for (let p of products) {
       
@@ -40,11 +37,9 @@ async function migrate() {
       updated++;
     }
 
-    console.log(`✅ DONE — Updated all ${updated} products.`);
     process.exit(0);
 
   } catch (e) {
-    console.error("❌ Migration Error:", e);
     process.exit(1);
   }
 }

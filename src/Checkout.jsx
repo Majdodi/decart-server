@@ -7,9 +7,10 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import fixImage, { getProductImage } from "./utils/fixImage";
 import api from "./api";
+import toast from "react-hot-toast";
 
 export default function Checkout() {
-  const { t } = useTranslation();
+const { t, i18n } = useTranslation();
   const { user, token } = useAuth();
   const { cartItems, clearCart } = useCart();
   const navigate = useNavigate();
@@ -94,7 +95,7 @@ const shippingFee =
     const { name, value, type, checked } = e.target;
 
     if (name === "paymentMethod" && value === "card") {
-      alert("🚫 الدفع ببطاقة الائتمان غير مفعل حالياً.");
+      toast.error("Payment by credit card is not available at this time.");
       return;
     }
 
@@ -116,27 +117,19 @@ const shippingFee =
   };
 
 const handleApplyDiscount = async () => {
-  console.log("🚀 APPLY DISCOUNT CLICKED");
-  console.log("📤 SENDING:", { code: discountCode, totalAmount: subtotal });
-
   try {
     const response = await api.post("/admin/discounts/validate", {
       code: discountCode,
       totalAmount: subtotal,
     });
 
-    console.log("✅ RESPONSE FROM SERVER:", response.data);
-
     // 👇 أهم خطوة (أنت ناسيها)
     setDiscount(response.data.discount);
 
-    alert("🎉 تم تطبيق الخصم بنجاح!");
+    toast.success("Discount has been applied successfully.");
 
   } catch (error) {
-    console.log("❌ APPLY DISCOUNT ERROR:", error);
-    console.log("❌ ERROR RESPONSE:", error.response);
-
-    alert(`❌ ${error.response?.data?.error || "حدث خطأ في تطبيق الخصم."}`);
+    toast.error(error.response?.data?.error || "The discount could not be applied. Please check the code and try again.");
   }
 };
 
@@ -157,7 +150,10 @@ const handleApplyDiscount = async () => {
         },
       cartItems: cartItems.map((item) => ({
   productId: item.productId || item._id || item.id || item.product?._id || null,
-  name: item.name || item.product?.name || "Unknown",
+name:
+  i18n.language === "ar"
+    ? item.name_ar
+    : item.name_en,
   price: Number(item.price || item.product?.price || 0),
   quantity: Number(item.qty ?? item.quantity ?? 1),
   image: item.image || item.product?.image || item.images?.[0] || null,
@@ -172,12 +168,12 @@ const handleApplyDiscount = async () => {
       const result = response.data;
 
       if (result.success) {
-        alert(result.message || "✅ تم إنشاء الطلب بنجاح!");
+        toast.success(result.message || "Your order has been placed successfully.");
 
         if (typeof clearCart === "function") clearCart();
         navigate("/order-success");
       } else {
-        alert("⚠️ تم استلام الرد لكن لم يتم تأكيد الطلب من السيرفر.");
+        toast.error("Your order could not be confirmed. Please try again.");
       }
 
       try {
@@ -187,12 +183,10 @@ const handleApplyDiscount = async () => {
           : [result.order];
         localStorage.setItem("guestOrders", JSON.stringify(newList));
         window.dispatchEvent(new Event("guest-orders-updated"));
-      } catch (err) {
-        console.warn("⚠️ خطأ أثناء حفظ الطلب محلياً:", err);
+      } catch {
       }
     } catch (error) {
-      console.error("❌ خطأ أثناء إرسال الطلب:", error);
-      alert("⚠️ لم يتم إرسال الطلب بنجاح، تحقق من الاتصال بالإنترنت أو أعد المحاولة.");
+      toast.error("Your order could not be sent. Please check your connection and try again.");
     }
   };
 
@@ -473,7 +467,7 @@ const handleApplyDiscount = async () => {
               {/* 🌍 استخدام getProductImage بدلاً من fixImage مباشرة */}
               <img
 src={fixImage(item.images?.[0])}
-                alt={item.name}
+alt={i18n.language === "ar" ? item.name_ar : item.name_en}
                 onError={(e) => {
                   e.target.src = "/images/fallback.png";
                 }}
@@ -481,7 +475,12 @@ src={fixImage(item.images?.[0])}
               />
 
               <div className="flex-1 px-4">
-                <p className="font-medium text-[]">{item.name}</p>
+<p className="font-medium text-[]">
+ {i18n.language === "ar"
+  ? item.name_ar
+  : item.name_en}
+
+</p>
                 <p className="text-sm text-[]">Qty: {item.qty || 1}</p>
               </div>
               

@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import api from "./api";
 import { useAuth } from "./AuthContext";
+import toast from "react-hot-toast";
+import { useConfirm } from "./contexts/ConfirmContext";
 import { useNavigate } from "react-router-dom";
 import {
   FiEdit,
@@ -13,6 +15,7 @@ import {
 } from "react-icons/fi";
 
 export default function AdminProductsPage() {
+  const { showConfirm } = useConfirm();
   const [products, setProducts] = useState([]);
   const [editProduct, setEditProduct] = useState(null);
 
@@ -46,7 +49,6 @@ export default function AdminProductsPage() {
       const res = await api.get("/products");
       setProducts(res.data);
     } catch (err) {
-      console.error(err);
     }
   };
 
@@ -115,8 +117,7 @@ return arr.filter(Boolean).map(img => fixImage(img));
         stock: "",
       });
     } catch (err) {
-      console.error(err);
-      alert("خطأ في إنشاء المنتج");
+      toast.error("Could not create the product. Please try again.");
     }
   };
 
@@ -136,21 +137,26 @@ return arr.filter(Boolean).map(img => fixImage(img));
       setEditProduct(null);
       fetchProducts();
     } catch (err) {
-      console.error(err);
     }
   };
 
   // ================================
   // ⭐ حذف منتج
   // ================================
-  const deleteProduct = async (id) => {
-    if (!window.confirm("هل أنت متأكد من حذف المنتج؟")) return;
-    try {
-      await api.delete(`/products/${id}`);
-      fetchProducts();
-    } catch (err) {
-      console.error(err);
-    }
+  const deleteProduct = (id) => {
+    showConfirm({
+      title: "Delete Product",
+      message: "Are you sure you want to delete this product? This action cannot be undone.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      onConfirm: async () => {
+        try {
+          await api.delete(`/products/${id}`);
+          fetchProducts();
+        } catch (err) {
+        }
+      },
+    });
   };
 
   return (

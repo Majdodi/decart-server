@@ -1,5 +1,5 @@
 // src/ProductCardSlider.jsx
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import fixImage from "./utils/fixImage";
 
@@ -7,23 +7,32 @@ function ProductCardSlider({ images = [], name, productId }) {
   const [index, setIndex] = useState(0);
   const containerRef = useRef(null);
   const navigate = useNavigate();
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    setIsDesktop(mq.matches);
+    const handler = (e) => setIsDesktop(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   let startX = 0;
 
   const handleMouseEnter = () => {
-    if (images.length > 1) setIndex(1);
+    if (isDesktop && images.length > 1) setIndex(1);
   };
 
   const handleMouseLeave = () => {
-    setIndex(0);
+    if (isDesktop) setIndex(0);
   };
 
   const onMouseDown = (e) => {
+    if (!isDesktop) return;
     startX = e.clientX;
 
     const handleMove = (moveEvent) => {
       const diff = moveEvent.clientX - startX;
-
       if (diff > 60) {
         prevImage();
         startX = moveEvent.clientX;
@@ -40,22 +49,6 @@ function ProductCardSlider({ images = [], name, productId }) {
 
     window.addEventListener("mousemove", handleMove);
     window.addEventListener("mouseup", stop);
-  };
-
-  const onTouchStart = (e) => {
-    startX = e.touches[0].clientX;
-  };
-
-  const onTouchMove = (e) => {
-    const diff = e.touches[0].clientX - startX;
-
-    if (diff > 60) {
-      prevImage();
-      startX = e.touches[0].clientX;
-    } else if (diff < -60) {
-      nextImage();
-      startX = e.touches[0].clientX;
-    }
   };
 
   const nextImage = () =>
@@ -81,8 +74,6 @@ function ProductCardSlider({ images = [], name, productId }) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseDown={onMouseDown}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
     >
       <div
         onClick={handleClick}
@@ -91,8 +82,6 @@ function ProductCardSlider({ images = [], name, productId }) {
       >
         {safeImages.map((img, i) => {
           const finalImg = fixImage(img);
-          console.log("🔻 Slider image input:", img);
-  console.log("🔻 Slider final src:", finalImg);
           return (
             <img
               key={i}
@@ -115,7 +104,7 @@ function ProductCardSlider({ images = [], name, productId }) {
               e.stopPropagation();
               prevImage();
             }}
-            className="absolute top-1/2 left-3 -translate-y-1/2 
+            className="hidden md:block absolute top-1/2 left-3 -translate-y-1/2 
                  text-white text-3xl font-bold 
                  opacity-0 group-hover:opacity-100 
                  transition duration-300 pointer-events-auto z-20"
@@ -128,7 +117,7 @@ function ProductCardSlider({ images = [], name, productId }) {
               e.stopPropagation();
               nextImage();
             }}
-            className="absolute top-1/2 right-3 -translate-y-1/2 
+            className="hidden md:block absolute top-1/2 right-3 -translate-y-1/2 
                  text-white text-3xl font-bold 
                  opacity-0 group-hover:opacity-100 
                  transition duration-300 pointer-events-auto z-20"

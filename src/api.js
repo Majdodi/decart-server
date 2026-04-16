@@ -14,18 +14,9 @@ export const API_BASE_URL =
     ? "http://localhost:5000/api"
     : "https://decart-server.onrender.com/api");
 
-// Debugging
-console.log(
-  "%c🌐 API BASE URL =>",
-  "color: ; font-size:14px",
-  API_BASE_URL
-);
-
 /* ============================================
    🛠 Create Global Axios Instance
    ============================================ */
-console.log("🔥 API BASE URL =>", import.meta.env.VITE_API_URL);
-
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: false,
@@ -43,8 +34,6 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  console.log("📌 Axios → Auth Header:", config.headers.Authorization);
-
   return config;
 });
 
@@ -54,13 +43,7 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
-    console.error(
-      "❌ API Error:",
-      err?.response?.data || err.message || "Unknown error"
-    );
-    return Promise.reject(err);
-  }
+  (err) => Promise.reject(err)
 );
 
 

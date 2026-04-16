@@ -12,7 +12,6 @@ router.get("/user/:userId", async (req, res) => {
 
     res.json(orders);
   } catch (err) {
-    console.error("❌ Get Orders Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -87,11 +86,11 @@ totalAmount = subtotal - discountAmount + (shippingFee || 0);
         const product = await Product.findById(item.productId);
 
         if (!product) {
-          return res.status(404).json({ error: `❌ المنتج ${item.name} غير موجود` });
+          return res.status(404).json({ error: `المنتج ${item.name} غير موجود.` });
         }
 
         if (product.stock < item.quantity) {
-          return res.status(400).json({ error: `❌ الكمية المطلوبة من ${item.name} غير متوفرة` });
+          return res.status(400).json({ error: `الكمية المطلوبة من ${item.name} غير متوفرة حالياً.` });
         }
 
         product.stock -= item.quantity;
@@ -139,12 +138,11 @@ const newOrder = new Order({
 
     res.status(201).json({
       success: true,
-      message: "✅ تم إنشاء الطلب بنجاح وتحديث المخزون",
+      message: "Your order has been placed successfully.",
       order: newOrder,
     });
   } catch (err) {
-    console.error("Checkout Error:", err);
-    res.status(500).json({ error: "خطأ أثناء إنشاء الطلب" });
+    res.status(500).json({ error: "An error occurred while placing your order. Please try again." });
   }
 });
 

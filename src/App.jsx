@@ -5,9 +5,11 @@ import { useAuth } from "./AuthContext.jsx";
 import { useCart } from "./CartContext.jsx";
 import { FaBars, FaTimes } from "react-icons/fa";
 import ChatButton from "./ChatButton.jsx";
-import CookieConsent from "react-cookie-consent";
+import CookieConsent from "./CookieConsent.jsx";
+import { CookieConsentProvider } from "./contexts/CookieConsentContext.jsx";
+import { ConfirmProvider } from "./contexts/ConfirmContext.jsx";
 import Footer from "./footer.jsx";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster, ToastBar } from "react-hot-toast";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function App() {
@@ -72,7 +74,8 @@ useEffect(() => {
 
 
   return (
-    
+    <CookieConsentProvider>
+    <ConfirmProvider>
     <div className="min-h-screen bg-siteBg text-siteText">
       {/* Navbar */}
       <nav
@@ -232,7 +235,8 @@ useEffect(() => {
         <Outlet />
       </main>
 
-      {/* زر المحادثة والكوكيز */}
+      {/* رسالة سياسة الخصوصية والكوكيز */}
+      <CookieConsent />
       <ChatButton />
       {location.pathname !== "/checkout" && <Footer />}
 
@@ -240,18 +244,29 @@ useEffect(() => {
   position="top-right"
   toastOptions={{
     style: {
-      background: "",
-      color: "",
+      background: "#F7EFE6",
+      color: "#594539",
+      border: "1px solid #D9C8B6",
       borderRadius: "10px",
-      padding: "12px 16px",
-      fontSize: "14px"
+      padding: "14px 20px",
+      fontSize: "14px",
+      fontWeight: "500",
+      maxWidth: "380px",
     },
     success: { duration: 2500 },
     error: { duration: 3000 },
   }}
-/>
+>
+  {(t) => (
+    <ToastBar toast={t} style={{ background: "#F7EFE6", color: "#594539", border: "1px solid #D9C8B6", borderRadius: "10px", padding: "14px 20px", fontSize: "14px", fontWeight: "500", maxWidth: "380px" }}>
+      {({ message }) => <>{message}</>}
+    </ToastBar>
+  )}
+</Toaster>
 
     </div>
+    </ConfirmProvider>
+    </CookieConsentProvider>
   );
 }
 

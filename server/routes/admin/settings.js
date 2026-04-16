@@ -31,7 +31,6 @@ router.post(
         });
 
       if (error) {
-        console.error("❌ Supabase Upload Error:", error);
         return res.status(500).json({ error: "Supabase upload failed" });
       }
 
@@ -53,7 +52,6 @@ router.post(
         heroImage: heroURL,
       });
     } catch (err) {
-      console.error("❌ Hero upload error:", err);
       res.status(500).json({ error: "Server error" });
     }
   }

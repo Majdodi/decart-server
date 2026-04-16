@@ -4,8 +4,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const PasswordResetToken = require("../models/PasswordResetToken");
-const { sendPasswordResetEmail } = require("../utils/email"); // ✅ استدعاء وظيفة الإرسال
-
 const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 
 /**
@@ -34,17 +32,12 @@ exports.forgotPassword = async (req, res) => {
     });
 
     const resetLink = `https://decart-server.onrender.com/reset-password?token=${resetToken}`;
-    console.log("🔗 Reset link generated:", resetLink);
-
-    console.log("📤 Calling sendPasswordResetEmail() ...");
-    console.log("📧 Current mail creds:", process.env.EMAIL_USERNAME, process.env.EMAIL_PASSWORD);
 
     // ✅ استدعاء الدالة الفعلية لإرسال الإيميل
     await sendPasswordResetEmail(user.email, resetLink);
 
     res.json({ message: "Password reset link sent to email" });
   } catch (error) {
-    console.error("❌ forgotPassword error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -84,7 +77,6 @@ exports.resetPassword = async (req, res) => {
 
     res.json({ success: true, message: "Password reset successful" });
   } catch (error) {
-    console.error("❌ resetPassword error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -116,8 +108,6 @@ exports.login = async (req, res) => {
       { expiresIn: "2h" }
     );
 
-    console.log("✅ تسجيل دخول ناجح:", user.email, "| الدور:", user.role);
-
     res.json({
       success: true,
       message: "Login successful",
@@ -130,7 +120,6 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("❌ login error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

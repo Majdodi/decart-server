@@ -64,7 +64,6 @@ images: (product.images || []).map(img => cleanImagePath(img)),
 
     res.json({ items: items.filter(Boolean) });
   } catch (err) {
-    console.error("❌ CART GET ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -97,7 +96,6 @@ router.post("/add", async (req, res) => {
     await cart.save();
     res.json({ success: true });
   } catch (err) {
-    console.error("❌ CART ADD ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -124,7 +122,6 @@ router.put("/update", async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.error("❌ UPDATE ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -146,7 +143,6 @@ router.delete("/remove/:userId/:productId", async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.error("❌ REMOVE ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });

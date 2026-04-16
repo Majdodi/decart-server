@@ -49,7 +49,7 @@ const sortOptions = {
     api
       .get("/products")
       .then((res) => setProducts(res.data))
-      .catch((err) => console.error("❌ Error loading products:", err));
+      .catch(() => {});
   }, []);
 
   // ============================
@@ -100,6 +100,11 @@ const sortOptions = {
     const walk = (x - startX.current) * 2;
     slider.scrollLeft = scrollLeftStart.current - walk;
   };
+
+const getName = (p) =>
+  lang === "ar"
+    ? p.name_ar || p.name_en
+    : p.name_en || p.name_ar;
 
   const touchEnd = () => {
     isDown.current = false;
@@ -177,10 +182,7 @@ const hasActiveFilters =
   filters.sort !== "az";
 
 
-const getName = (p) =>
-  lang === "ar"
-    ? p.name_ar || p.name_en
-    : p.name_en || p.name_ar;
+
 
 
   return (
@@ -392,8 +394,16 @@ const getName = (p) =>
 <div className="md:hidden flex justify-start mb-6">
   <button
     onClick={() => setFilterOpen(true)}
-    className="flex items-center gap-2 border px-4 py-2 rounded-md"
-  >
+  className="
+    flex items-center gap-2
+    px-4 py-2 rounded-md
+    border-0
+    outline-none
+    ring-0
+    focus:outline-none
+    focus:ring-0
+    active:outline-none
+  "  >
     <svg width="18" height="18" fill="none" stroke="currentColor">
       <path d="M3 5h12M5 9h8M7 13h4" />
     </svg>
@@ -419,10 +429,6 @@ const getName = (p) =>
         onTouchEnd={touchEnd}
       >
         {filteredProducts.map((product) => {
-
-          console.log("🟦 PRODUCT RAW DATA:", product);
-console.log("🟧 RAW IMAGES FIELD:", product.images);
-
           let images = [];
 
           if (Array.isArray(product.images) && product.images.length > 0) {

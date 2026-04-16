@@ -28,9 +28,7 @@ async function sendPasswordResetEmail(to, link) {
     };
 
     await sgMail.send(msg);
-    console.log("✅ Password reset email sent successfully to:", to);
   } catch (err) {
-    console.error("❌ SendGrid error:", err.response?.body || err.message);
     throw err;
   }
 }

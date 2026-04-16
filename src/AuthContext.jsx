@@ -29,14 +29,8 @@ useEffect(() => {
       const parsed = JSON.parse(rawUser);
       const normalized = normalizeUser(parsed);
       setUser(normalized);
-      console.log("🔄 Loaded stored user:", normalized);
     }
-
-    if (storedToken) {
-      console.log("🔑 Loaded stored token:", storedToken);
-    }
-  } catch (err) {
-    console.error("❌ Failed to parse stored user:", err);
+  } catch {
   }
 
   setLoading(false);
@@ -45,8 +39,6 @@ useEffect(() => {
 
   // ✅ Login
 const login = (userData, token, remember = false) => {
-  console.log("✅ Login user:", userData);
-
   setUser(userData);
 
   if (remember) {
@@ -57,7 +49,6 @@ const login = (userData, token, remember = false) => {
     sessionStorage.setItem("token", token);
   }
 
-  console.log("📝 Token saved:", token);
 };
 
 
@@ -69,8 +60,6 @@ const login = (userData, token, remember = false) => {
     localStorage.removeItem("token");
     sessionStorage.removeItem("user");
     sessionStorage.removeItem("token");
-
-    console.log("🚪 User logged out ✅");
   };
 
   return (

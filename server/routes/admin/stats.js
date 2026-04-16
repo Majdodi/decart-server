@@ -68,7 +68,6 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
       topProduct: topProducts[0] || null
     });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "server error" });
   }
 });

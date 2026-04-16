@@ -1,7 +1,12 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { FaFacebook, FaInstagram, FaWhatsapp } from "react-icons/fa";
+import { useCookieConsent } from "./contexts/CookieConsentContext.jsx";
 
 export default function Footer() {
+  const { t } = useTranslation();
+  const { openPreferences } = useCookieConsent();
   return (
     <footer className="bg-brandDark text-center py-10 mt-16">
       {/* اسم الموقع */}
@@ -54,6 +59,19 @@ export default function Footer() {
           <FaWhatsapp className="text-xl hover:opacity-70 transition" />
         </a>
       </div>
+
+      {/* سياسة الخصوصية وتفضيلات الكوكيز */}
+      <div className="text-sm mb-2 flex flex-wrap justify-center gap-x-4 gap-y-1" style={{ color: "" }}>
+        <Link to="/privacy-policy" className="hover:underline">
+          {t("privacyPolicy.title")}
+        </Link>
+        <button type="button" onClick={openPreferences} className="hover:underline">
+          {t("cookie.managePreferences")}
+        </button>
+      </div>
+<Link to="/terms" className="text-sm hover:underline">
+  Terms of Service
+</Link>
 
       {/* النصوص السفلية */}
       <div className="text-sm" style={{ color: "" }}>

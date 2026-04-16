@@ -2,8 +2,10 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import fixAdminImage from "../utils/fixAdminImage";
+import { useConfirm } from "../contexts/ConfirmContext";
 
 export default function ProductsPanel() {
+  const { showConfirm } = useConfirm();
   const [products, setProducts] = useState([]);
   const [editProduct, setEditProduct] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -20,9 +22,12 @@ export default function ProductsPanel() {
   heartNote_ar: "",
   baseNote_en: "",
   baseNote_ar: "",
+  collectionText_en: "",
+  collectionText_ar: "",
   price: "",
   images: "",
-gender: [],
+  gender: [],
+  featured: false,
 });
 
 
@@ -31,7 +36,7 @@ gender: [],
     api
       .get("/products")
       .then((res) => setProducts(res.data))
-      .catch((err) => console.error("❌ Error loading products:", err));
+      .catch(() => {});
   }, []);
 
   // ================================
@@ -48,10 +53,8 @@ gender: [],
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("🟢 UPLOAD RESULT =", res.data.url);
       return res.data.url; // Supabase URL
-    } catch (err) {
-      console.error("❌ Image upload error:", err);
+    } catch {
       return null;
     }
   };
@@ -78,8 +81,6 @@ gender: [],
       imagesArray.push(...extra);
     }
 
-    console.log("🟦 FINAL IMAGES TO SAVE =", imagesArray);
-
     api.post("/products", {
   name_en: newProduct.name_en,
   name_ar: newProduct.name_ar,
@@ -91,9 +92,12 @@ gender: [],
   heartNote_ar: newProduct.heartNote_ar,
   baseNote_en: newProduct.baseNote_en,
   baseNote_ar: newProduct.baseNote_ar,
+  collectionText_en: newProduct.collectionText_en,
+  collectionText_ar: newProduct.collectionText_ar,
   price: newProduct.price,
   images: imagesArray,
-  gender: newProduct.gender, // ✅
+  gender: newProduct.gender,
+  featured: newProduct.featured,
 })
 
 
@@ -110,13 +114,17 @@ gender: [],
   heartNote_ar: "",
   baseNote_en: "",
   baseNote_ar: "",
+  collectionText_en: "",
+  collectionText_ar: "",
   price: "",
   images: "",
+  gender: [],
+  featured: false,
 });
 
         setImageFile(null);
       })
-      .catch((err) => console.error("❌ Error adding product:", err));
+      .catch(() => {});
   };
 
   // ================================
@@ -140,9 +148,6 @@ gender: [],
 
       imagesArray.push(...list);
     }
-
-console.log("🟡 FRONTEND → editProduct BEFORE SEND:", editProduct);
-
 api.put(`/products/${editProduct._id}`, {
   name_en: editProduct.name_en,
   name_ar: editProduct.name_ar,
@@ -154,9 +159,12 @@ api.put(`/products/${editProduct._id}`, {
   heartNote_ar: editProduct.heartNote_ar,
   baseNote_en: editProduct.baseNote_en,
   baseNote_ar: editProduct.baseNote_ar,
+  collectionText_en: editProduct.collectionText_en,
+  collectionText_ar: editProduct.collectionText_ar,
   price: editProduct.price,
   images: imagesArray,
-  gender: editProduct.gender, // ✅
+  gender: editProduct.gender,
+  featured: editProduct.featured,
 })
 
 
@@ -167,7 +175,7 @@ api.put(`/products/${editProduct._id}`, {
         setEditProduct(null);
         setEditImageFile(null);
       })
-      .catch((err) => console.error("❌ Error updating product:", err));
+      .catch(() => {});
 
 
   
@@ -178,15 +186,20 @@ api.put(`/products/${editProduct._id}`, {
   // ⭐ حذف منتج
   // ================================
   const deleteProduct = (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?"))
-      return;
-
-    api
-      .delete(`/products/${id}`)
-      .then(() => {
-        setProducts((prev) => prev.filter((p) => p._id !== id));
-      })
-      .catch((err) => console.error("❌ Error deleting product:", err));
+    showConfirm({
+      title: "Delete Product",
+      message: "Are you sure you want to delete this product? This action cannot be undone.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      onConfirm: () => {
+        api
+          .delete(`/products/${id}`)
+          .then(() => {
+            setProducts((prev) => prev.filter((p) => p._id !== id));
+          })
+          .catch(() => {});
+      },
+    });
   };
 
   // ================================
@@ -299,6 +312,24 @@ api.put(`/products/${editProduct._id}`, {
   }
 />
 
+<input
+  placeholder="Collection Text (EN) - e.g. Elegance Aromatic Fragrance For Men. 50ml"
+  className="border p-2 w-full mb-2"
+  value={newProduct.collectionText_en}
+  onChange={(e) =>
+    setNewProduct({ ...newProduct, collectionText_en: e.target.value })
+  }
+/>
+
+<input
+  placeholder="Collection Text (AR) - نص المجموعة بالعربي"
+  className="border p-2 w-full mb-2"
+  value={newProduct.collectionText_ar}
+  onChange={(e) =>
+    setNewProduct({ ...newProduct, collectionText_ar: e.target.value })
+  }
+/>
+
 <div className="mb-2">
   <p className="mb-1 font-medium">Gender</p>
 
@@ -330,7 +361,16 @@ api.put(`/products/${editProduct._id}`, {
   ))}
 </div>
 
-
+<div className="mb-2">
+  <label className="flex items-center gap-2 cursor-pointer">
+    <input
+      type="checkbox"
+      checked={newProduct.featured}
+      onChange={(e) => setNewProduct({ ...newProduct, featured: e.target.checked })}
+    />
+    <span className="font-medium">Featured (show in OUR COLLECTION)</span>
+  </label>
+</div>
 
         <button
           onClick={addProduct}
@@ -529,6 +569,24 @@ api.put(`/products/${editProduct._id}`, {
   }
 />
 
+<input
+  className="border p-2 w-full mb-2"
+  placeholder="Collection Text (EN) - e.g. Elegance Aromatic Fragrance For Men. 50ml"
+  value={editProduct.collectionText_en || ""}
+  onChange={(e) =>
+    setEditProduct({ ...editProduct, collectionText_en: e.target.value })
+  }
+/>
+
+<input
+  className="border p-2 w-full mb-2"
+  placeholder="Collection Text (AR) - نص المجموعة بالعربي"
+  value={editProduct.collectionText_ar || ""}
+  onChange={(e) =>
+    setEditProduct({ ...editProduct, collectionText_ar: e.target.value })
+  }
+/>
+
 {[
   { k: "men", l: "Men" },
   { k: "women", l: "Women" },
@@ -556,7 +614,16 @@ api.put(`/products/${editProduct._id}`, {
   </label>
 ))}
 
-
+<div className="mt-2">
+  <label className="flex items-center gap-2 cursor-pointer">
+    <input
+      type="checkbox"
+      checked={editProduct.featured || false}
+      onChange={(e) => setEditProduct({ ...editProduct, featured: e.target.checked })}
+    />
+    <span className="font-medium">Featured (show in OUR COLLECTION)</span>
+  </label>
+</div>
 
             <div className="flex justify-end space-x-3">
               <button

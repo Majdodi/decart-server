@@ -4,7 +4,6 @@ export function saveOrder(order) {
     const oldOrders = JSON.parse(localStorage.getItem("guest_orders")) || [];
     localStorage.setItem("guest_orders", JSON.stringify([...oldOrders, order]));
   } catch {
-    console.warn("⚠️ Failed to save guest order");
   }
 }
 

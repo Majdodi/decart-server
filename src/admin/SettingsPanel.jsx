@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import { useAuth } from "../AuthContext";
+import toast from "react-hot-toast";
 
 export default function SettingsPanel() {
   const [settings, setSettings] = useState({ siteName: "", contactEmail: "", themeColor: "" });
@@ -16,22 +17,25 @@ const [heroFile, setHeroFile] = useState(null);
 
   const save = () => {
     api.post("/admin/settings", settings)
-      .then(() => alert("Saved"))
-      .catch(() => alert("Error"));
+      .then(() => toast.success("Settings saved successfully."))
+      .catch(() => toast.error("Could not save settings. Please try again."));
   };
 
   const uploadHero = () => {
-  if (!heroFile) return alert("اختر صورة أولاً!");
+  if (!heroFile) {
+    toast.error("Please select an image first.");
+    return;
+  }
 
   const form = new FormData();
   form.append("heroImage", heroFile);
 
   api.post("/admin/settings/hero-image", form)
     .then(res => {
-      alert("تم تحديث صورة الهيرو بنجاح");
+      toast.success("Hero image has been updated successfully.");
       window.location.reload();
     })
-    .catch(() => alert("Error uploading image"));
+    .catch(() => toast.error("Could not upload image. Please try again."));
 };
 
   return (
@@ -70,7 +74,7 @@ const [heroFile, setHeroFile] = useState(null);
           </button>
           <button 
   onClick={uploadHero}
-  className="px-4 py-2 bg-blue-600 text-white rounded ml-3"
+className="px-4 py-2 bg-[#594539] text-white rounded ml-3 hover:bg-[#4a3a30] transition"
 >
   Upload Hero Image
 </button>

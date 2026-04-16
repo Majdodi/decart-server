@@ -25,7 +25,6 @@ router.get("/stats", verifyToken, verifyAdmin, async (req, res) => {
       topProducts: await Product.find().sort({ sold: -1 }).limit(5),
     });
   } catch (error) {
-    console.error("❌ Error in /stats:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -36,7 +35,6 @@ router.get("/users", verifyToken, verifyAdmin, async (req, res) => {
     const users = await User.find().select("name email role");
     res.json(users);
   } catch (error) {
-    console.error("❌ Error in /users:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -49,7 +47,6 @@ router.get("/orders", verifyToken, verifyAdmin, async (req, res) => {
       .sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
-    console.error("❌ Error in /orders:", error);
     res.status(500).json({ message: "Server error" });
   }
 });

@@ -4,10 +4,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from './CartContext';
 import { FiTrash } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
-import fixImage, { getProductImage } from "./utils/fixImage";
+import fixImage from "./utils/fixImage";
 
 export default function Cart() {
-  const { t } = useTranslation();
+const { t, i18n } = useTranslation();
   const { cartItems, updateQty, removeFromCart } = useCart();
   const navigate = useNavigate();
 
@@ -68,22 +68,6 @@ export default function Cart() {
 {/* ⭐ تنظيف عناصر السلة قبل العرض */}
 {cartItems
   .map(item => {
-    // 🟦 أطبع العنصر الخام القادم من CartContext
-console.log("🟦 RAW ITEM:", {
-  id: item._id,
-  name: item.name,
-  images: item.images,
-  image: item.image
-});
-
-// اطبع محتوى الصور لو موجودة
-if (Array.isArray(item.images)) {
-  item.images.forEach((img, idx) => {
-    console.log(`🟨 IMAGE[${idx}] RAW VALUE:`, img);
-  });
-}
-
-
     const cleanedItem = {
       ...item,
       images: Array.isArray(item.images)
@@ -95,29 +79,6 @@ if (Array.isArray(item.images)) {
             : ["/images/fallback.png"]
     };
 
-    // 🟩 أطبع بعد التنظيف
-    console.log("🟩 CLEANED ITEM IMAGES:", {
-      id: item._id,
-      cleanedImages: cleanedItem.images
-    });
-
-    // 🟪 اطبع الصورة النهائية التي سيستخدمها getProductImage
-    console.log("🟪 getProductImage RESULT:", {
-      id: item._id,
-      finalImage: getProductImage(cleanedItem)
-    });
-
-    console.log("🟣 CART PAGE → RAW cartItems =", cartItems);
-
-cartItems.forEach(item => {
-  console.log("🔵 ITEM = ", {
-    id: item._id,
-    name: item.name,
-    images: item.images,
-    image0: item.images?.[0],
-  });
-});
-
     return cleanedItem;
   })
   .map(item => (
@@ -126,26 +87,13 @@ cartItems.forEach(item => {
       className="flex items-center justify-between bg-[] p-4 shadow rounded"
     >
       <div className="flex items-start space-x-4 flex-1 min-w-0">
-
-        {/* 🔥 Debug قبل عرض الصورة */}
-{/* 🔥 Debug قبل عرض الصورة */}
-{console.log("🟥 IMAGE RENDER ATTEMPT:", {
-  id: item._id,
-  images: item.images,
-  image0: item.images?.[0],
-  final: getProductImage(item)
-})}
-
-
-  
-
      <img
 src={fixImage(item.images?.[0])}
-  alt={item.name}
+  alt={i18n.language === "ar" ? item.name_ar : item.name_en}
   onError={(e) => {
     e.target.src = "/images/fallback.png";
   }}
-  className="w-20 h-20 min-w-[80px] min-h-[80px] object-cover rounded-lg shadow-sm border border-[]"
+  className="w-20 h-20 object-cover rounded-lg border-0 shadow-none outline-none bg-transparent"
 />
 
 
@@ -154,7 +102,7 @@ src={fixImage(item.images?.[0])}
             to={`/product/${item._id}`}
             className="block text-lg font-semibold hover:underline truncate -mt-1 text-[]"
           >
-            {item.name}
+  {i18n.language === "ar" ? item.name_ar : item.name_en}
           </Link>
         </div>
       </div>

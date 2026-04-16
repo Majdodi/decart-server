@@ -1,6 +1,7 @@
 // server/routes/product.js
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const Product = require("../models/Product");
 const { verifyToken, verifyAdmin } = require("../middleware/verifyToken");
 
@@ -46,7 +47,6 @@ router.post("/upload", upload.single("image"), async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const products = await Product.find();
-    console.log("📤 SENDING PRODUCT TO FRONT:", products);
     res.json(products);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -59,8 +59,11 @@ router.get("/", async (req, res) => {
 // =====================================
 router.get("/:id", async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ error: "Not found" });
+    }
+
     const product = await Product.findById(req.params.id);
-    console.log("📤 SINGLE PRODUCT:", product);
 
     if (!product) return res.status(404).json({ error: "Not found" });
 
@@ -82,8 +85,6 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     try {
-      console.log("🟢 BACKEND → req.body:", req.body);
-
       let images = [];
 
       // ⭐ رفع صورة لسوبابيز
@@ -139,6 +140,10 @@ router.post(
   price: req.body.price,
   category: req.body.category,
   stock: req.body.stock,
+  gender: Array.isArray(req.body.gender) ? req.body.gender : req.body.gender ? [req.body.gender] : [],
+  featured: req.body.featured === true || req.body.featured === "true",
+  collectionText_en: req.body.collectionText_en || "",
+  collectionText_ar: req.body.collectionText_ar || "",
 
   images,
 });
@@ -166,8 +171,6 @@ router.put(
 
   async (req, res) => {
     try {
-      console.log("🟢 BACKEND → req.body:", req.body);
-
       let images = [];
 
       // 🖼️ Image upload (Supabase)
@@ -238,7 +241,14 @@ if (req.body.gender) {
     : [req.body.gender];
 }
 
-console.log("🟣 FINAL UPDATE DATA:", updateData);
+// Featured
+if (req.body.featured !== undefined) {
+  updateData.featured = req.body.featured === true || req.body.featured === "true";
+}
+
+// Collection text
+if (req.body.collectionText_en !== undefined) updateData.collectionText_en = req.body.collectionText_en;
+if (req.body.collectionText_ar !== undefined) updateData.collectionText_ar = req.body.collectionText_ar;
 
 const updated = await Product.findByIdAndUpdate(
   req.params.id,
@@ -246,13 +256,9 @@ const updated = await Product.findByIdAndUpdate(
   { new: true }
 );
 
-
-      console.log("✅ SAVED GENDER:", updated.gender);
-
       res.json(updated);
 
     } catch (err) {
-      console.error("❌ UPDATE ERROR:", err);
       res.status(500).json({ error: err.message });
     }
   }

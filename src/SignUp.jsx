@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import { useCart } from "./CartContext";
 import api from "./api";
+import toast from "react-hot-toast";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -17,11 +18,6 @@ export default function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("=====================================");
-    console.log("🚀 SIGNUP SUBMIT");
-    console.log("📤 Sending:", { name, email, password });
-    console.log("=====================================");
-
     try {
       const res = await api.post("/auth/register", {
         name,
@@ -29,30 +25,19 @@ export default function SignUp() {
         password,
       });
 
-      console.log("📥 RAW REGISTER RESPONSE:", res);
       const data = res.data;
 
-      console.log("🔍 PARSED RESPONSE:", data);
-      console.log("🧪 data.success =", data.success);
-      console.log("🧪 data.user =", data.user);
-      console.log("🧪 data.token =", data.token);
-
       if (!data.success) {
-        console.log("❌ ERROR from backend:", data.error);
-        return alert(data.error || "Registration failed");
+        toast.error(data.error || "Registration could not be completed. Please try again.");
+        return;
       }
 
       if (!data.token) {
-        console.log("❌ ERROR: token is MISSING from backend!");
-        return alert("Server error: token missing");
+        toast.error("A technical error occurred. Please try again later.");
+        return;
       }
 
-      console.log("💾 Saving token...");
       localStorage.setItem("token", data.token);
-      console.log("📝 Token saved:", localStorage.getItem("token"));
-
-      console.log("🔐 Calling login() from AuthContext...");
-      console.log("👤 User passed to login():", data.user);
 
       login(
         {
@@ -65,23 +50,13 @@ export default function SignUp() {
         true
       );
 
-      console.log("✅ login() CALLED SUCCESSFULLY");
-
       localStorage.setItem("userId", data.user._id);
-      console.log("💾 userId saved:", data.user._id);
 
-      alert("Registered successfully");
+      toast.success("Your account has been created successfully.");
       navigate("/");
 
     } catch (err) {
-      console.log("🔥 ================================");
-      console.log("❌ CATCH ERROR IN REGISTER");
-      console.log("💥 err.response:", err.response);
-      console.log("💥 err.message:", err.message);
-      console.log("💥 FULL ERROR:", err);
-      console.log("🔥 ================================");
-
-      alert(err?.response?.data?.error || "Server error");
+      toast.error(err?.response?.data?.error || "A technical error occurred. Please try again.");
     }
   };
 

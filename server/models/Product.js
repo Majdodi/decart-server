@@ -41,6 +41,10 @@ gender: {
 
 
 
+    collectionText_en: { type: String, default: "" },
+    collectionText_ar: { type: String, default: "" },
+    featured: { type: Boolean, default: false },
+
     // المخزون
     stock: { type: Number, required: true, default: 0 },
   },

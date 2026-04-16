@@ -14,10 +14,10 @@ export default function ResetPassword() {
     e.preventDefault();
 
     if (password.length < 8)
-      return setState({ loading: false, message: '', error: 'Password must be at least 8 characters' });
+      return setState({ loading: false, message: '', error: 'Your password must be at least 8 characters long.' });
 
     if (password !== confirm)
-      return setState({ loading: false, message: '', error: 'Passwords do not match' });
+      return setState({ loading: false, message: '', error: 'The two passwords do not match.' });
 
     setState({ loading: true, message: '', error: '' });
 
@@ -30,9 +30,9 @@ export default function ResetPassword() {
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || 'Server error');
+      if (!res.ok) throw new Error(data.error || 'A technical error occurred. Please try again.');
 
-      setState({ loading: false, message: 'Password updated successfully. Redirecting…', error: '' });
+      setState({ loading: false, message: 'Your password has been updated successfully. Redirecting.', error: '' });
       setTimeout(() => navigate('/login', { replace: true }), 1500);
   
     } catch (err) {
@@ -77,8 +77,8 @@ export default function ResetPassword() {
         </button>
       </form>
 
-      {state.message && <p className="text-green-700 mt-4">{state.message}</p>}
-      {state.error && <p className="text-red-600 mt-4">{state.error}</p>}
+      {state.message && <p className="text-siteText mt-4">{state.message}</p>}
+      {state.error && <p className="text-siteText mt-4 border-l-2 border-siteDark pl-3">{state.error}</p>}
     </div>
   );
 }
