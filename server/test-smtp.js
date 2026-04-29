@@ -7,7 +7,7 @@ async function testSMTP() {
     secure: true,
     auth: {
       user: "shop@decart.ps",
-      pass: "Decart2024@!",
+      pass: process.env.EMAIL_PASSWORD,
     },
     tls: { rejectUnauthorized: false },
   });
